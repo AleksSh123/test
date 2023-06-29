@@ -19,7 +19,7 @@
         }
         .coordinates{
             
-            
+
             
             justify-content: space-around;
         }
@@ -38,25 +38,46 @@
  <div>
      current coordinates:
      <div class="coordinates">
+         lat
          <div id="lat" class="digitBox">
             123
          </div>
+         long
          <div id="long" class="digitBox">
             456
+         </div>
+         time
+         <div id="time" class="digitBox">
+             789
          </div>
      </div>
  </div>
 </div>
 
 <script>
+    let previosPosition = {
+        lat: 0,
+        long: 0,
+        time: 0
+    }
+
     const options = {}
     let currentPosition = navigator.geolocation.watchPosition(success,error,options);
     let latObject = document.getElementById("lat");
     let longObject = document.getElementById("long");
+    let timeObject = document.getElementById("time");
     
     function success(position){
+        let currentTime = new Date();
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
+        timeObject.innerHTML = currentTime;
+
+        
+        previosPosition.lat = position.coords.latitude;
+        previosPosition.long = position.coords.longitude;
+        previosPosition.time = currentTime;
+
     }
     function error(){
         latObject.innerHTML = "err"
