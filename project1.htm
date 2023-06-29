@@ -12,7 +12,7 @@
         }
         div{
             border: solid 1px;
-            max-width: 200px;
+            max-width: 300px;
             margin: 5px;
             padding: 5px;
             
@@ -48,7 +48,7 @@
          </div>
          time
          <div id="time" class="digitBox">
-             789
+             000
          </div>
      </div>
  </div>
@@ -69,11 +69,12 @@
     
     function success(position){
         let currentTime = new Date();
+        console.log(currentTime);
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
 
-        
+
         previosPosition.lat = position.coords.latitude;
         previosPosition.long = position.coords.longitude;
         previosPosition.time = currentTime;
