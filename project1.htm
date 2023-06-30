@@ -29,6 +29,9 @@
         .digitBox{
             color: black;
         }
+        .speedometr{
+            width: 300px;
+        }
     </style>
 </head>
 <body>
@@ -53,6 +56,32 @@
      </div>
  </div>
 </div>
+<div id="speedometr" class="speedometr">
+<span>Current speed: </span><span id="speedIndicator">00 </span><span>m/s</span>
+    <svg width="300" height="300">
+        <defs>
+            <!-- A marker to be used as an arrowhead -->
+
+            <marker
+            id="riderArrow"
+            viewBox="0 0 10 10"
+            refX="5"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+            stroke="yellow">
+            <path d="M 0 0 L 10 5 L 0 10 z" />
+          </marker>
+          </defs>
+        <circle id="circle" cx=150 cy=150 r=130 />
+
+        <line id="line2" x1="150" y1="270" x2="150" y2="40" stroke="yellow" stroke-width="3px" marker-end="url(#riderArrow)"/>
+    </svg>
+
+
+
+</div>
 
 <script>
     let previosPosition = {
@@ -61,11 +90,13 @@
         time: 0
     }
 
+    const lineRider=document.getElementById("line2");
     const options = {}
     let currentPosition = navigator.geolocation.watchPosition(success,error,options);
     let latObject = document.getElementById("lat");
     let longObject = document.getElementById("long");
     let timeObject = document.getElementById("time");
+    let spObject = document.getElementById("speedIndicator")
     
     function success(position){
         let currentTime = new Date();
@@ -73,6 +104,7 @@
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
+        spObject.innerHTML = position.coords.speed;
 
 
         previosPosition.lat = position.coords.latitude;
@@ -85,6 +117,11 @@
         longObject.innerHTML = "err"
         latObject.className = "errBox"
         longObject.className = "errBox"
+    }
+    function rotateRider(angle){
+        console.log(angle);
+        lineRider.setAttribute('transform','rotate ('+angle+' 150 150)');
+
     }
     
 </script>
