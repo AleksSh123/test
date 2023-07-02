@@ -58,6 +58,9 @@
 </div>
 <div id="speedometr" class="speedometr">
 <span>Current speed: </span><span id="speedIndicator">00 </span><span>m/s</span>
+<div>
+    Current heading: <span id="angleIndicator">00</span>
+</div>
     <svg width="300" height="300">
         <defs>
             <!-- A marker to be used as an arrowhead -->
@@ -97,6 +100,7 @@
     let longObject = document.getElementById("long");
     let timeObject = document.getElementById("time");
     let spObject = document.getElementById("speedIndicator")
+    let headingObject = document.getElementById("angleIndicator");
     
     function success(position){
         let currentTime = new Date();
@@ -105,6 +109,8 @@
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
         spObject.innerHTML = position.coords.speed;
+        headingObject.innerHTML = position.coords.heading;
+   
 
 
         previosPosition.lat = position.coords.latitude;
