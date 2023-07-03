@@ -94,7 +94,10 @@
     }
 
     const lineRider=document.getElementById("line2");
-    const options = {}
+    const options = {
+        enableHighAccuracy: true
+
+    }
     let currentPosition = navigator.geolocation.watchPosition(success,error,options);
     let latObject = document.getElementById("lat");
     let longObject = document.getElementById("long");
