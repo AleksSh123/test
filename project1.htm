@@ -57,10 +57,10 @@
  </div>
 </div>
 <div id="speedometr" class="speedometr">
-<span>Current speed: </span><span id="speedIndicator">00 </span><span>m/s</span>
+<span>Current speed: </span><span id="speedIndicator">00 </span><span>km/h</span>
 high accuracy
 <div>
-    Current heading: <span id="angleIndicator">00</span>
+    Current heading: <span id="angleIndicator">000</span>
 </div>
     <svg width="300" height="300">
         <defs>
@@ -105,6 +105,7 @@ high accuracy
     let timeObject = document.getElementById("time");
     let spObject = document.getElementById("speedIndicator")
     let headingObject = document.getElementById("angleIndicator");
+    //rotateRider(250);
     
     function success(position){
         let currentTime = new Date();
@@ -112,9 +113,9 @@ high accuracy
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
-        spObject.innerHTML = position.coords.speed;
-        headingObject.innerHTML = position.coords.heading;
-        rotateRider(position.coords.heading);
+        spObject.innerHTML = (position.coords.speed * 3.6).toFixed(1);
+        headingObject.innerHTML = Math.round(position.coords.heading);
+        rotateRider(Math.round(position.coords.heading));
    
 
 
