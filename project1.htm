@@ -95,11 +95,7 @@
 </div>
 
 <script>
-    let previosPosition = {
-        lat: 0,
-        long: 0,
-        time: 0
-    }
+
 
     const lineRider=document.getElementById("line2");
     const options = {
@@ -113,6 +109,25 @@
     let spObject = document.getElementById("speedIndicator")
     let headingObject = document.getElementById("angleIndicator");
     let averagerArray = new Array();
+
+    let stack  = {
+        push(speed,heading){
+            averagerArray.push([speed, heading]);
+            if (averagerArray.length > 5){
+                averagerArray.shift();
+            }
+        }
+    }
+
+    function calculateAverage(){
+        for (let i = 0; i < averagerArray.length; i++){
+            speedSumm += averagerArray[i][0];
+            headingSumm += averagerArray[i][1];
+        }
+        speedAverage = speedSumm / averagerArray.length;
+        headingAverage = headingSumm / averagerArray.length;
+        return speedAverage, headingAverage;
+    }
     //rotateRider(250);
     
     function success(position){
@@ -121,15 +136,12 @@
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
-        spObject.innerHTML = (position.coords.speed * 3.6).toFixed(1);
-        headingObject.innerHTML = Math.round(position.coords.heading);
-        rotateRider(Math.round(position.coords.heading));
+        stack.push(position.coords.speed,position.coords.heading)
+        speed,heading = calculateAverage();
+        spObject.innerHTML = (speed * 3.6).toFixed(1);
+        headingObject.innerHTML = Math.round(heading);
+        rotateRider(Math.round(heading));
    
-
-
-        previosPosition.lat = position.coords.latitude;
-        previosPosition.long = position.coords.longitude;
-        previosPosition.time = currentTime;
 
     }
     function error(){
