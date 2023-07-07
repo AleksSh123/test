@@ -102,7 +102,7 @@
         enableHighAccuracy: true
 
     }
-    let currentPosition = navigator.geolocation.watchPosition(success,error,options);
+    
     let latObject = document.getElementById("lat");
     let longObject = document.getElementById("long");
     let timeObject = document.getElementById("time");
@@ -118,26 +118,38 @@
             }
         }
     }
+    let currentPosition = navigator.geolocation.watchPosition(success,error,options);
 
     function calculateAverage(){
+        let speedSumm = 0;
+        let headingSumm = 0;
         for (let i = 0; i < averagerArray.length; i++){
             speedSumm += averagerArray[i][0];
             headingSumm += averagerArray[i][1];
         }
         speedAverage = speedSumm / averagerArray.length;
         headingAverage = headingSumm / averagerArray.length;
-        return speedAverage, headingAverage;
+        return [speedAverage, headingAverage];
     }
     //rotateRider(250);
     
-    function success(position){
+    function success(){
         let currentTime = new Date();
+        let result = new Array();
         console.log(currentTime);
+        /*    position.coords.latitude = Math.random() * 360;
+            position.coords.longitude = Math.random() * 360;
+            position.coords.speed = Math.random() * 3;
+            position.coords.heading = Math.random() * 120;
+        */
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
         stack.push(position.coords.speed,position.coords.heading)
-        speed,heading = calculateAverage();
+        result = calculateAverage();
+        speed = result[0];
+        heading = result[1];
+
         spObject.innerHTML = (speed * 3.6).toFixed(1);
         headingObject.innerHTML = Math.round(heading);
         rotateRider(Math.round(heading));
@@ -156,6 +168,16 @@
 
     }
     
+ /*   let position = {
+        coords: {
+            latitude: 0,
+            longitude: 0,
+            speed: 0,
+            heading: 0
+        }
+    }
+    setInterval(()=> success(),2000);
+*/
 </script>
 </body>
 </html>
