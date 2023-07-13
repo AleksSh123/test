@@ -44,7 +44,7 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <div class="firstLevelContainer">
- <h6>Demostration geolocation module v.1.3</h6>
+ <h6>Demostration geolocation module v.1.4</h6>
  <div>
      current coordinates:
      <div class="coordinates">
@@ -138,20 +138,20 @@
         let result = new Array();
         console.log(currentTime);
         console.log("1!");
-        console.log(position.coords.latitude);
+        console.log(currentPosition.coords.latitude);
         console.log("2!");
         /*    position.coords.latitude = Math.random() * 360;
             position.coords.longitude = Math.random() * 360;
             position.coords.speed = Math.random() * 3;
             position.coords.heading = Math.random() * 120;
         */
-        console.log(position.coords.latitude)
+        console.log(currentPosition.coords.latitude)
         console.log("intermediate");
-        console.log(position.coords.speed)
-        latObject.innerHTML = position.coords.latitude;
-        longObject.innerHTML = position.coords.longitude;
+        console.log(currentPosition.coords.speed)
+        latObject.innerHTML = currentPosition.coords.latitude;
+        longObject.innerHTML = currentPosition.coords.longitude;
         timeObject.innerHTML = currentTime;
-        stack.push(position.coords.speed,position.coords.heading)
+        stack.push(currentPosition.coords.speed,currentPosition.coords.heading)
         result = calculateAverage();
         speed = result[0];
         heading = result[1];
