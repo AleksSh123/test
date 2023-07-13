@@ -118,7 +118,7 @@
             }
         }
     }
-    let currentPosition = navigator.geolocation.watchPosition(success,error,options);
+    let position = navigator.geolocation.watchPosition(success,error,options);
 
     function calculateAverage(){
         let speedSumm = 0;
@@ -133,25 +133,25 @@
     }
     //rotateRider(250);
     
-    function success(){
+    function success(position){
         let currentTime = new Date();
         let result = new Array();
         console.log(currentTime);
         console.log("1!");
-        console.log(currentPosition.coords.latitude);
+        console.log(position.coords.latitude);
         console.log("2!");
         /*    position.coords.latitude = Math.random() * 360;
             position.coords.longitude = Math.random() * 360;
             position.coords.speed = Math.random() * 3;
             position.coords.heading = Math.random() * 120;
         */
-        console.log(currentPosition.coords.latitude)
+        console.log(position.coords.latitude)
         console.log("intermediate");
-        console.log(currentPosition.coords.speed)
-        latObject.innerHTML = currentPosition.coords.latitude;
-        longObject.innerHTML = currentPosition.coords.longitude;
+        console.log(position.coords.speed)
+        latObject.innerHTML = position.coords.latitude;
+        longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
-        stack.push(currentPosition.coords.speed,currentPosition.coords.heading)
+        stack.push(position.coords.speed,position.coords.heading)
         result = calculateAverage();
         speed = result[0];
         heading = result[1];
