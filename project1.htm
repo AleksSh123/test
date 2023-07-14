@@ -44,7 +44,7 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <div class="firstLevelContainer">
- <h6>Demostration geolocation module v.1.4</h6>
+ <h6>Demostration geolocation module v.1.5</h6>
  <div>
      current coordinates:
      <div class="coordinates">
@@ -67,6 +67,10 @@
 <span>Current speed: </span><span id="speedIndicator">00 </span><span> km/h</span>
 <hr>
     Current heading: <span id="angleIndicator">000</span><span> degrees</span>
+<hr>
+    Speed 10m average: <span id="speedIndicator10m">00</span><span> km/h</span>
+<hr>
+    Speed 1h average: <span id="speedIndicator1h">00</span><span> km/h</span>
 
     <svg width="300" height="300">
         <defs>
@@ -108,12 +112,14 @@
     let timeObject = document.getElementById("time");
     let spObject = document.getElementById("speedIndicator")
     let headingObject = document.getElementById("angleIndicator");
+    let sp10mObject = document.getElementById("speedIndicator10m");
+    let sp1hObject = document.getElementById("speedIndicator1h");
     let averagerArray = new Array();
 
     let stack  = {
-        push(speed,heading){
-            averagerArray.push([speed, heading]);
-            if (averagerArray.length > 5){
+        push(speed, heading, time){
+            averagerArray.push([speed, heading, time]);
+            if (averagerArray.length > 3600){
                 averagerArray.shift();
             }
         }
@@ -121,15 +127,32 @@
     let position = navigator.geolocation.watchPosition(success,error,options);
 
     function calculateAverage(){
-        let speedSumm = 0;
-        let headingSumm = 0;
+        let speedSumm5 = 0;
+        let headingSumm5 = 0;
+        let speedSumm10m = 0;
+        let speedSumm1h = 0;
+        let currentTime = new Date();
+        let count10mWathches = 0;
+        let count1hWatches = 0;
         for (let i = 0; i < averagerArray.length; i++){
-            speedSumm += averagerArray[i][0];
-            headingSumm += averagerArray[i][1];
+            if (i<6){
+                speedSumm5 += averagerArray[i][0];
+                headingSumm5 += averagerArray[i][1];
+            }
+            if ((currentTime.getTime() - averagerArray[i][2])<600){
+                speedSumm10m += averagerArray[i][0];
+                count10mWathches++;
+            }
+            if ((currentTime.getTime() - averagerArray[i][2])<3600){
+                speedSumm1h += averagerArray[i][0];
+                count1hWatches++;
+            }
         }
-        speedAverage = speedSumm / averagerArray.length;
-        headingAverage = headingSumm / averagerArray.length;
-        return [speedAverage, headingAverage];
+        speedAverage5 = speedSumm / 5;
+        headingAverage5 = headingSumm / 5;
+        speedAverage10m = speedSumm10m / count10mWathches;
+        speedAverage1h = speedSumm1h / count1hWatches;
+        return [speedAverage5, headingAverage5, speedAverage10m, speedAverage1h];
     }
     //rotateRider(250);
     
@@ -151,13 +174,18 @@
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
-        stack.push(position.coords.speed,position.coords.heading)
+        stack.push(position.coords.speed, position.coords.heading, position.timestamp)
         result = calculateAverage();
-        speed = result[0];
+        speed5 = result[0];
         heading = result[1];
+        speed10m = result[2];
+        speed1h = result[3];
 
-        spObject.innerHTML = (speed * 3.6).toFixed(1);
+        spObject.innerHTML = (speed5 * 3.6).toFixed(1);
         headingObject.innerHTML = Math.round(heading);
+        sp10mObject.innerHTML = (speed10m * 3.6).toFixed(1);
+        sp1hObject.innerHTML = (speed1h * 3.6).toFixed(1);
+
         rotateRider(Math.round(heading));
    
 
