@@ -134,16 +134,16 @@
         let currentTime = new Date();
         let count10mWathches = 0;
         let count1hWatches = 0;
-        for (let i = 0; i < averagerArray.length; i++){
+        for (let i = averagerArray.length; i >0 ; i--){
             if (i<6){
                 speedSumm5 += averagerArray[i][0];
                 headingSumm5 += averagerArray[i][1];
             }
-            if ((currentTime.getTime() - averagerArray[i][2])<600){
+            if ((currentTime.getTime() - averagerArray[i][2])<60000){
                 speedSumm10m += averagerArray[i][0];
                 count10mWathches++;
             }
-            if ((currentTime.getTime() - averagerArray[i][2])<3600){
+            if ((currentTime.getTime() - averagerArray[i][2])<600000){
                 speedSumm1h += averagerArray[i][0];
                 count1hWatches++;
             }
