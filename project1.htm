@@ -44,7 +44,7 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <div class="firstLevelContainer">
- <h6>Demostration geolocation module v.1.5.1</h6>
+ <h6>Demostration geolocation module v.1.5.2</h6>
  <div>
      current coordinates:
      <div class="coordinates">
@@ -132,12 +132,14 @@
         let speedSumm10m = 0;
         let speedSumm1h = 0;
         let currentTime = new Date();
+        let count5Watches = 0;
         let count10mWathches = 0;
         let count1hWatches = 0;
         for (let i = averagerArray.length - 1; i >0 ; i--){
-            if (i<averagerArray.length - 5){
+            if (i > averagerArray.length - 6){
                 speedSumm5 += averagerArray[i][0];
                 headingSumm5 += averagerArray[i][1];
+                count5Watches++;
             }
             if ((currentTime.getTime() - averagerArray[i][2])<60000){
                 speedSumm10m += averagerArray[i][0];
@@ -148,8 +150,8 @@
                 count1hWatches++;
             }
         }
-        speedAverage5 = speedSumm5 / 5;
-        headingAverage5 = headingSumm5 / 5;
+        speedAverage5 = speedSumm5 / count5Watches;
+        headingAverage5 = headingSumm5 / count5Watches;
         speedAverage10m = speedSumm10m / count10mWathches;
         speedAverage1h = speedSumm1h / count1hWatches;
         return [speedAverage5, headingAverage5, speedAverage10m, speedAverage1h];
@@ -159,6 +161,7 @@
     function success(position){
         let currentTime = new Date();
         let result = new Array();
+        let shiftHeading = 0;
         console.log(currentTime);
         console.log("1!");
         console.log(position.coords.latitude);
@@ -174,7 +177,8 @@
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
-        stack.push(position.coords.speed, position.coords.heading + 360, position.timestamp)
+        shiftHeading = position.coords.heading + 360;
+        stack.push(position.coords.speed, shiftHeading , position.timestamp)
         result = calculateAverage();
         speed5 = result[0];
         heading = result[1] - 360;
