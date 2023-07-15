@@ -134,7 +134,7 @@
         let currentTime = new Date();
         let count10mWathches = 0;
         let count1hWatches = 0;
-        for (let i = averagerArray.length; i >0 ; i--){
+        for (let i = averagerArray.length - 1; i >0 ; i--){
             if (i<6){
                 speedSumm5 += averagerArray[i][0];
                 headingSumm5 += averagerArray[i][1];
