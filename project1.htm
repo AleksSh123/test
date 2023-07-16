@@ -44,7 +44,7 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <div class="firstLevelContainer">
- <h6>Demostration geolocation module v.1.5.2</h6>
+ <h6>Demostration geolocation module v.1.5.4</h6>
  <div>
      current coordinates:
      <div class="coordinates">
@@ -125,6 +125,16 @@
         }
     }
     let position = navigator.geolocation.watchPosition(success,error,options);
+/*     let position = {
+        coords:{
+            longitude: 0,
+            latitude: 0,
+            speed: 0,
+            heading: 0
+        },
+        timestamp: 0
+
+    } */
 
     function calculateAverage(){
         let speedSumm5 = 0;
@@ -135,10 +145,15 @@
         let count5Watches = 0;
         let count10mWathches = 0;
         let count1hWatches = 0;
-        for (let i = averagerArray.length - 1; i >0 ; i--){
+        for (let i = averagerArray.length - 1; i >= 0 ; i--){
             if (i > averagerArray.length - 6){
                 speedSumm5 += averagerArray[i][0];
-                headingSumm5 += averagerArray[i][1];
+                if ((averagerArray[i][1] - headingSumm5) < 180) {
+                    headingSumm5 += averagerArray[i][1];
+                }
+                else {
+                    headingSumm5 += averagerArray[i][1] - 360;
+                }
                 count5Watches++;
             }
             if ((currentTime.getTime() - averagerArray[i][2])<60000){
@@ -161,27 +176,33 @@
     function success(position){
         let currentTime = new Date();
         let result = new Array();
-        let shiftHeading = 0;
-        console.log(currentTime);
-        console.log("1!");
-        console.log(position.coords.latitude);
-        console.log("2!");
+
+        //gpsEmulation();
+
+        //console.log(currentTime);
+        //console.log("1!");
+        //console.log(position.coords.latitude);
+        //console.log("2!");
         /*    position.coords.latitude = Math.random() * 360;
             position.coords.longitude = Math.random() * 360;
             position.coords.speed = Math.random() * 3;
             position.coords.heading = Math.random() * 120;
         */
-        console.log(position.coords.latitude)
-        console.log("intermediate");
-        console.log(position.coords.speed)
+
+
+        //console.log(position.coords.latitude)
+        //console.log("intermediate");
+        //console.log(position.coords.speed)
         latObject.innerHTML = position.coords.latitude;
         longObject.innerHTML = position.coords.longitude;
         timeObject.innerHTML = currentTime;
-        shiftHeading = position.coords.heading + 360;
-        stack.push(position.coords.speed, shiftHeading , position.timestamp)
+
+        console.log(position.coords.speed, position.coords.heading , position.timestamp)
+        stack.push(position.coords.speed, position.coords.heading , position.timestamp)
         result = calculateAverage();
+        console.log(result)
         speed5 = result[0];
-        heading = result[1] - 360;
+        heading = result[1];
         speed10m = result[2];
         speed1h = result[3];
 
@@ -205,7 +226,22 @@
         lineRider.setAttribute('transform','rotate ('+angle+' 150 150)');
 
     }
-    
+    function gpsEmulation(){
+        position.coords.latitude = -1;
+        position.coords.longitude = -1;
+        position.coords.speed = Math.random() + 3;
+        let randomDigit = Math.random()
+        position.coords.heading = randomDigit * 60 - 30;
+        console.log("random: " + randomDigit + ", randomDegree: " + position.coords.heading)
+        if (position.coords.heading < 0){
+            position.coords.heading  = position.coords.heading + 360;
+        }
+        console.log("randomDegree after normalize: " + position.coords.heading)
+        let tt = new Date();
+        position.timestamp = tt.getTime();
+    }
+
+    setInterval(success,1000,position);
 
 </script>
 </body>
