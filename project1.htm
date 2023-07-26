@@ -1,247 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="windows-1251">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <style>
-        body {
-            font-size: 1em;
-        }
-        div{
-            
-            max-width: 300px;
-            margin: 5px;
-            padding: 5px;
-            
-        }
-        .coordinates{
-            
-
-            
-            justify-content: space-around;
-        }
-        .errBox{
-            color: red;
-            border: solid 1px;;
-        }
-        .digitBox{
-            color: black;
-            border: solid 1px;
-        }
-        .speedometr{
-            width: 300px;
-            border: solid 1px;
-        }
-        .firstLevelContainer{
-            border: solid 1px;
-        }
-        
+    <link rel="stylesheet" href="styles.css">
+ <style >
     </style>
 </head>
 <body>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-<div class="firstLevelContainer">
- <h6>Demostration geolocation module v.1.5.4</h6>
- <div>
-     current coordinates:
-     <div class="coordinates">
-         lat
-         <div id="lat" class="digitBox">
-            123
-         </div>
-         long
-         <div id="long" class="digitBox">
-            456
-         </div>
-         time
-         <div id="time" class="digitBox">
-             000
-         </div>
-     </div>
- </div>
-</div>
-<div id="speedometr" class="speedometr">
-<span>Current speed: </span><span id="speedIndicator">00 </span><span> km/h</span>
-<hr>
-    Current heading: <span id="angleIndicator">000</span><span> degrees</span>
-<hr>
-    Speed 10m average: <span id="speedIndicator10m">00</span><span> km/h</span>
-<hr>
-    Speed 1h average: <span id="speedIndicator1h">00</span><span> km/h</span>
+    <div class="container firstLevelContainer">
+        <div class="inputPilotClass row">
+            <div class="headerClass">
+                <h6>Shlyapa web v.1.6</h6>
+            </div>
+            <div class="inputElementClass">
+                <input id="pilotId" type="text">
+                <label for="inputPilotButton"><input type="button" id="inputPilotButton" value="¬ведите летуна" onclick="getPilot()"></label>
+            </div>
+        </div>
+        <div class="pilotDataElementClass row align-items-center">
+                <div class="col-9">
+                    <div>высота</div>
+                    <div>скорость мгновенна€</div>
+                    <div>скорость усредененна€</div>
+                    <div>рассто€ние</div>
+                    <div>направление</div>
+                </div >
+                <div class="col-3">
+                    <div id="altitude">0</div>
+                    <div id="instantSpeed">00</div>
+                    <div id="averageSpeed">00</div>
+                    <div id="distance">000</div>
+                    <div id="direction">0</div>
+                </div>
+        </div>
+        <div id="speedometr" class="speedometr row">
+            <svg width="300" height="300">
+                <defs>
+                    <!-- A marker to be used as an arrowhead -->
 
-    <svg width="300" height="300">
-        <defs>
-            <!-- A marker to be used as an arrowhead -->
+                    <marker
+                    id="riderArrow"
+                    viewBox="0 0 10 10"
+                    refX="5"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                    stroke="#4aa8dc"
+                    fill="#4aa8dc">
+                    <path d="M 0 0 L 10 5 L 0 10 z" />
+                </marker>
+                </defs>
+                <circle id="circle" cx=150 cy=150 r=130 stroke="#4aa8dc" fill="transparent" stroke-width="3px"> </circle>
 
-            <marker
-            id="riderArrow"
-            viewBox="0 0 10 10"
-            refX="5"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-            stroke="#4aa8dc"
-            fill="#4aa8dc">
-            <path d="M 0 0 L 10 5 L 0 10 z" />
-          </marker>
-          </defs>
-        <circle id="circle" cx=150 cy=150 r=130 stroke="#4aa8dc" fill="transparent" stroke-width="3px"> </circle>
-
-        <line id="line2" x1="150" y1="270" x2="150" y2="40" stroke="#4aa8dc" stroke-width="3px" marker-end="url(#riderArrow)"/>
-    </svg>
-
-
-
-</div>
-
-<script>
+                <line id="line2" x1="150" y1="270" x2="150" y2="40" stroke="#4aa8dc" stroke-width="3px" marker-end="url(#riderArrow)"/>
+            </svg>
+        </div>
+    </div>
 
 
-    const lineRider=document.getElementById("line2");
-    const options = {
-        enableHighAccuracy: true
-
-    }
-    
-    let latObject = document.getElementById("lat");
-    let longObject = document.getElementById("long");
-    let timeObject = document.getElementById("time");
-    let spObject = document.getElementById("speedIndicator")
-    let headingObject = document.getElementById("angleIndicator");
-    let sp10mObject = document.getElementById("speedIndicator10m");
-    let sp1hObject = document.getElementById("speedIndicator1h");
-    let averagerArray = new Array();
-
-    let stack  = {
-        push(speed, heading, time){
-            averagerArray.push([speed, heading, time]);
-            if (averagerArray.length > 3600){
-                averagerArray.shift();
-            }
-        }
-    }
-    let position = navigator.geolocation.watchPosition(success,error,options);
-/*     let position = {
-        coords:{
-            longitude: 0,
-            latitude: 0,
-            speed: 0,
-            heading: 0
-        },
-        timestamp: 0
-
-    } */
-
-    function calculateAverage(){
-        let speedSumm5 = 0;
-        let headingSumm5 = 0;
-        let speedSumm10m = 0;
-        let speedSumm1h = 0;
-        let currentTime = new Date();
-        let count5Watches = 0;
-        let count10mWathches = 0;
-        let count1hWatches = 0;
-        for (let i = averagerArray.length - 1; i >= 0 ; i--){
-            if (i > averagerArray.length - 6){
-                speedSumm5 += averagerArray[i][0];
-                if ((averagerArray[i][1] - headingSumm5) < 180) {
-                    headingSumm5 += averagerArray[i][1];
-                }
-                else {
-                    headingSumm5 += averagerArray[i][1] - 360;
-                }
-                count5Watches++;
-            }
-            if ((currentTime.getTime() - averagerArray[i][2])<60000){
-                speedSumm10m += averagerArray[i][0];
-                count10mWathches++;
-            }
-            if ((currentTime.getTime() - averagerArray[i][2])<600000){
-                speedSumm1h += averagerArray[i][0];
-                count1hWatches++;
-            }
-        }
-        speedAverage5 = speedSumm5 / count5Watches;
-        headingAverage5 = headingSumm5 / count5Watches;
-        speedAverage10m = speedSumm10m / count10mWathches;
-        speedAverage1h = speedSumm1h / count1hWatches;
-        return [speedAverage5, headingAverage5, speedAverage10m, speedAverage1h];
-    }
-    //rotateRider(250);
-    
-    function success(position){
-        let currentTime = new Date();
-        let result = new Array();
-
-        //gpsEmulation();
-
-        //console.log(currentTime);
-        //console.log("1!");
-        //console.log(position.coords.latitude);
-        //console.log("2!");
-        /*    position.coords.latitude = Math.random() * 360;
-            position.coords.longitude = Math.random() * 360;
-            position.coords.speed = Math.random() * 3;
-            position.coords.heading = Math.random() * 120;
-        */
-
-
-        //console.log(position.coords.latitude)
-        //console.log("intermediate");
-        //console.log(position.coords.speed)
-        latObject.innerHTML = position.coords.latitude;
-        longObject.innerHTML = position.coords.longitude;
-        timeObject.innerHTML = currentTime;
-
-        console.log(position.coords.speed, position.coords.heading , position.timestamp)
-        stack.push(position.coords.speed, position.coords.heading , position.timestamp)
-        result = calculateAverage();
-        console.log(result)
-        speed5 = result[0];
-        heading = result[1];
-        speed10m = result[2];
-        speed1h = result[3];
-
-        spObject.innerHTML = (speed5 * 3.6).toFixed(1);
-        headingObject.innerHTML = Math.round(heading);
-        sp10mObject.innerHTML = (speed10m * 3.6).toFixed(1);
-        sp1hObject.innerHTML = (speed1h * 3.6).toFixed(1);
-
-        rotateRider(Math.round(heading));
-   
-
-    }
-    function error(){
-        latObject.innerHTML = "err"
-        longObject.innerHTML = "err"
-        latObject.className = "errBox"
-        longObject.className = "errBox"
-    }
-    function rotateRider(angle){
-        console.log(angle);
-        lineRider.setAttribute('transform','rotate ('+angle+' 150 150)');
-
-    }
-    function gpsEmulation(){
-        position.coords.latitude = -1;
-        position.coords.longitude = -1;
-        position.coords.speed = Math.random() + 3;
-        let randomDigit = Math.random()
-        position.coords.heading = randomDigit * 60 - 30;
-        console.log("random: " + randomDigit + ", randomDegree: " + position.coords.heading)
-        if (position.coords.heading < 0){
-            position.coords.heading  = position.coords.heading + 360;
-        }
-        console.log("randomDegree after normalize: " + position.coords.heading)
-        let tt = new Date();
-        position.timestamp = tt.getTime();
-    }
-
-    setInterval(success,1000,position);
+<script src="script.js">
 
 </script>
 </body>

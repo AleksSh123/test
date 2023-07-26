@@ -1,0 +1,43 @@
+body {
+    font-size: 1em;
+}
+div{
+    
+    max-width: 350px;
+    
+   
+    
+}
+.coordinates{
+    
+
+    
+    justify-content: space-around;
+}
+.errBox{
+    color: red;
+    border: solid 1px;;
+}
+.digitBox{
+    color: black;
+    border: solid 1px;
+}
+.speedometr{
+    width: 350px;
+    border: solid 1px;
+}
+.inputPilotClass{
+    border: solid 1px;
+    padding: 0.5em;
+}
+.pilotDataElementClass{
+    border: solid 1px;
+    display: flex;
+    padding: 0.5em;
+}
+.firstLevelContainer{
+    border: solid 1px;
+}
+label{
+    margin-top: 3px;
+}
