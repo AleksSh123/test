@@ -3,7 +3,7 @@ body {
 }
 div{
     
-    max-width: 350px;
+    max-width: 400px;
     
    
     
@@ -23,7 +23,7 @@ div{
     border: solid 1px;
 }
 .speedometr{
-    width: 350px;
+    width: 400px;
     border: solid 1px;
 }
 .inputPilotClass{

@@ -5,6 +5,9 @@ const averageSpeedObject = document.getElementById("averageSpeed");
 const distanceObject = document.getElementById("distance");
 const directionObject = document.getElementById("direction");
 const pilotIdElement = document.getElementById("pilotId");
+const timeShiftElement = document.getElementById("timeShift");
+const shiftedDateElement = document.getElementById("shiftedDate");
+const actualDateElement = document.getElementById("actualDate");
 const options = {
     enableHighAccuracy: true
 }
@@ -18,6 +21,8 @@ let stack  = {
         }
     }
 }
+let watcherLatitude = 0;
+let watcherLongitude = 0;
 let position = navigator.geolocation.watchPosition(success,error,options);
 /*     let position = {
         coords:{
@@ -87,9 +92,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //console.log(position.coords.latitude)
         //console.log("intermediate");
         //console.log(position.coords.speed)
-        latObject.innerHTML = position.coords.latitude;
-        longObject.innerHTML = position.coords.longitude;
-        timeObject.innerHTML = currentTime;
+        //latObject.innerHTML = position.coords.latitude;
+        //longObject.innerHTML = position.coords.longitude;
+        //timeObject.innerHTML = currentTime;
+        watcherLatitude = position.coords.latitude;
+        watcherLongitude = position.coords.longitude;
 
         console.log(position.coords.speed, position.coords.heading , position.timestamp)
         stack.push(position.coords.speed, position.coords.heading , position.timestamp)
@@ -100,10 +107,10 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         speed10m = result[2];
         speed1h = result[3];
 
-        spObject.innerHTML = (speed5 * 3.6).toFixed(1);
+        //spObject.innerHTML = (speed5 * 3.6).toFixed(1);
         headingObject.innerHTML = Math.round(heading);
-        sp10mObject.innerHTML = (speed10m * 3.6).toFixed(1);
-        sp1hObject.innerHTML = (speed1h * 3.6).toFixed(1);
+        //sp10mObject.innerHTML = (speed10m * 3.6).toFixed(1);
+        //sp1hObject.innerHTML = (speed1h * 3.6).toFixed(1);
 
         rotateRider(Math.round(heading));
    
@@ -135,26 +142,39 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         position.timestamp = tt.getTime();
     }
     async function  getLiveData(sn,timeStamp){
-        urlLocal = url + "?trackers={\"" + String(sn) + "\": " + String(timeStamp) + "}";
+        urlLocal = url + "?trackers={\"" + String(sn) + "\":" + String(timeStamp) + "}";
         let response = await fetch(urlLocal);
         let liveData = await response.json();
         return liveData;
     }
 
-    async function getPilot(){
+    function getPilot(){
         let pilotId = pilotIdElement.value;
-        let data = await getLiveData(pilotId, 1657350000);
-        fillPilotData(data[pilotId]);
-        debugger;
+        let timeShift = timeShiftElement.value * 1000;
+        //fillPilotData(data[pilotId]);
+        //debugger;
+        setInterval(fillPilotData,5000,pilotId,timeShift)
+
     }
 
-    function fillPilotData(array){
-        array.reverse();
-        altitudeObject.innerHTML = array[0].c;
-        instantSpeedObject.innerHTML = array[0].v;
-        averageSpeedObject.innerHTML  = calculateAverageSpeed(array);
-        distanceObject.innerHTML = calculateDistance(array);
-        directionObject.innerHTML = calculateDirection(array);
+    async function fillPilotData(pilotId, timeShift){
+        
+        
+        let currentTime = new Date().getTime();
+        let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
+        shiftedDateElement.innerHTML = getShortDate(requestTime);
+        let data = await getLiveData(pilotId, requestTime);
+        let array = data[pilotId];
+        if (array){
+            
+            array.reverse();
+            altitudeObject.innerHTML = array[0].c;
+            instantSpeedObject.innerHTML = array[0].v;
+            averageSpeedObject.innerHTML  = calculateAverageSpeed(array);
+            distanceObject.innerHTML = calculateDistance(array);
+            directionObject.innerHTML = calculateDirection(array);
+        }
+        
 
     }
 
@@ -167,6 +187,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     function calculateDistance(array){
+        let pilotLongitude = array[0].oi;
+        let pilotLatitude = array[0].ai / 60000;
 
     }
 
@@ -176,6 +198,19 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
     function getCurrentCoords(){
         
+    }
+
+    function getShortDate(time){
+        let longTime =  new Date(time * 1000);
+        let date = longTime.getDate();
+        let month = longTime.getMonth();
+        let year = longTime.getFullYear();
+        let hour = longTime.getHours();
+        let minute = longTime.getMinutes();
+        let seconds = longTime.getSeconds();
+        let shortTime = date + " - " + month + " - " + year + " " + hour + ":" + minute + ":" + seconds;
+        return shortTime;
+
     }
 
     //setInterval(success,1000,position);

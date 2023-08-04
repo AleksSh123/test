@@ -21,23 +21,28 @@
             </div>
             <div class="inputElementClass">
                 <input id="pilotId" type="text">
+                <input id="timeShift" type="text">
                 <label for="inputPilotButton"><input type="button" id="inputPilotButton" value="Введите летуна" onclick="getPilot()"></label>
             </div>
         </div>
         <div class="pilotDataElementClass row align-items-center">
-                <div class="col-9">
+                <div class="col-6">
                     <div>высота</div>
                     <div>скорость мгновенная</div>
                     <div>скорость усредененная</div>
                     <div>расстояние</div>
                     <div>направление</div>
+                    <div>смещенная дата</div>
+                    <div>последняя дата</div>
                 </div >
-                <div class="col-3">
+                <div class="col-6">
                     <div id="altitude">0</div>
                     <div id="instantSpeed">00</div>
                     <div id="averageSpeed">00</div>
                     <div id="distance">000</div>
                     <div id="direction">0</div>
+                    <div id="shiftedDate">00-00-0000 00:00:00</div>
+                    <div id="actualDate">00-00-0000 00:00:00</div>
                 </div>
         </div>
         <div id="speedometr" class="speedometr row">
