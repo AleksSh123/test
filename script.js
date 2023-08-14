@@ -9,6 +9,7 @@ const timeShiftElement = document.getElementById("timeShift");
 const shiftedDateElement = document.getElementById("shiftedDate");
 const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
+const inputButtonElement = document.getElementById("inputButtonElement")
 const options = {
     enableHighAccuracy: true
 }
@@ -154,6 +155,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function getPilot(){
         let pilotId = pilotIdElement.value;
         let timeShift = timeShiftElement.value * 1000;
+        inputButtonElement.classList.add("inputButtonClassPressed");
         //fillPilotData(data[pilotId]);
         //debugger;
         setInterval(fillPilotData,5000,pilotId,timeShift)

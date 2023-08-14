@@ -41,3 +41,13 @@ div{
 label{
     margin-top: 3px;
 }
+.inputButtonClass::after{
+    display: none;
+    
+}
+.inputButtonClassPressed:after{
+    content: "\2713";
+    margin-left: 0.5em;
+    display: inline;
+    color: green;
+}
