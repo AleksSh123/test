@@ -170,6 +170,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             array.reverse();
             altitudeObject.innerHTML = array[0].c;
             instantSpeedObject.innerHTML = array[0].v;
+            actualDateElement.innerHTML = getShortDate(array[0].d);
             averageSpeedObject.innerHTML  = calculateAverageSpeed(array);
             distanceObject.innerHTML = calculateDistance(array);
             directionObject.innerHTML = calculateDirection(array);
@@ -183,13 +184,22 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         for (let i = 0; i < 60; i++){
             speedSumm += array[i].v;
         }
-        return averageSpeed = speedSumm / 60;
+        let averageSpeed = speedSumm / 60;
+        return Math.round(averageSpeed,1);
     }
 
     function calculateDistance(array){
+        const latitudeDegDist = 111.321377778;
+        const longitudeDegDist = 111.134861111;
         let pilotLongitude = array[0].oi;
         let pilotLatitude = array[0].ai / 60000;
-
+        let deltaLatitude = pilotLatitude - watcherLatitude;
+        let deltaLongitude = pilotLongitude - watcherLongitude;
+        let distanceLatitudeKm = deltaLatitude * latitudeDegDist * Math.cos(watcherLatitude);
+        let distanceLongitudeKm = deltaLongitude * longitudeDegDist;
+        let distance = Math.hypot(distanceLatitudeKm, distanceLongitudeKm);
+        let result = Math.round(distance,3)
+        return result;
     }
 
     function calculateDirection(array){
@@ -208,9 +218,17 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let hour = longTime.getHours();
         let minute = longTime.getMinutes();
         let seconds = longTime.getSeconds();
-        let shortTime = date + " - " + month + " - " + year + " " + hour + ":" + minute + ":" + seconds;
+        month++;
+        let shortTime = twoDigits(date) + " - " + twoDigits(month) + " - " + year + " " + twoDigits(hour) + ":" + twoDigits(minute) + ":" + twoDigits(seconds);
         return shortTime;
 
+    }
+
+    function twoDigits(value){
+        if (value<10){
+            value = "0" + String(value);
+        }
+        return value;
     }
 
     //setInterval(success,1000,position);
