@@ -8,6 +8,7 @@ const pilotIdElement = document.getElementById("pilotId");
 const timeShiftElement = document.getElementById("timeShift");
 const shiftedDateElement = document.getElementById("shiftedDate");
 const actualDateElement = document.getElementById("actualDate");
+const lineRider = document.getElementById("line2");
 const options = {
     enableHighAccuracy: true
 }
@@ -23,6 +24,7 @@ let stack  = {
 }
 let watcherLatitude = 0;
 let watcherLongitude = 0;
+let watcherHeading = 0;
 let position = navigator.geolocation.watchPosition(success,error,options);
 /*     let position = {
         coords:{
@@ -104,6 +106,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         console.log(result)
         speed5 = result[0];
         heading = result[1];
+        watcherHeading = heading;
         speed10m = result[2];
         speed1h = result[3];
 
@@ -112,7 +115,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //sp10mObject.innerHTML = (speed10m * 3.6).toFixed(1);
         //sp1hObject.innerHTML = (speed1h * 3.6).toFixed(1);
 
-        rotateRider(Math.round(heading));
+        //rotateRider(Math.round(heading));
    
 
     }
@@ -173,7 +176,9 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             actualDateElement.innerHTML = getShortDate(array[0].d);
             averageSpeedObject.innerHTML  = calculateAverageSpeed(array);
             distanceObject.innerHTML = calculateDistance(array);
-            directionObject.innerHTML = calculateDirection(array);
+            let heading = calculateDirection(array);
+            directionObject.innerHTML = heading;
+            rotateRider(heading);
         }
         
 
@@ -191,6 +196,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function calculateDistance(array){
         const latitudeDegDist = 111.321377778;
         const longitudeDegDist = 111.134861111;
+        //let watcherLatitude = 56;
+        //let watcherLongitude = 92;
         let pilotLongitude = array[0].oi / 60000;
         let pilotLatitude = array[0].ai / 60000;
         let deltaLatitude = pilotLatitude - watcherLatitude;
@@ -198,12 +205,44 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let distanceLatitudeKm = deltaLatitude * latitudeDegDist * Math.cos(watcherLatitude);
         let distanceLongitudeKm = deltaLongitude * longitudeDegDist;
         let distance = Math.hypot(distanceLatitudeKm, distanceLongitudeKm);
-        let result = Math.round(distance,3)
+        let result = distance.toFixed(3);
+        //return result;
         return result;
     }
 
     function calculateDirection(array){
+        //let watcherLatitude = 55;
+        //let watcherLongitude = 93;
+        //let watcherHeading = 300;
+        let pilotLongitude = array[0].oi / 60000;
+        let pilotLatitude = array[0].ai / 60000;
+        watcherLatitude = watcherLatitude * Math.PI / 180;
+        watcherLongitude = watcherLongitude * Math.PI / 180;
+        pilotLatitude = pilotLatitude * Math.PI / 180;
+        pilotLongitude = pilotLongitude * Math.PI / 180;
+        const deltaLongitude = pilotLongitude - watcherLongitude;
+        const wLatCos = Math.cos(watcherLatitude);
+        const wLatSin = Math.sin(watcherLatitude);
+        const pLatCos = Math.cos(pilotLatitude);
+        const pLatSin = Math.sin(pilotLatitude);
+        const deltaCos = Math.cos(deltaLongitude);
+        const deltaSin = Math.sin(deltaLongitude);
+        const x = (wLatCos * pLatSin) - (wLatSin * pLatCos * deltaCos);
+        const y = deltaSin * pLatCos;
+        //const arg = (-y / x)
+        z = Math.atan2(-y, x);
+        z = z * 180 / Math.PI;
+        if (z > 0){
+            z = 360 - z;
+        } else{
+            z = -z;
+        }
+        let direction = z - watcherHeading;
+        if (direction < 0) {
+            direction = 360 + direction;
+        }
 
+        return Math.round(direction);
     }
 
     function getCurrentCoords(){
@@ -219,7 +258,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let minute = longTime.getMinutes();
         let seconds = longTime.getSeconds();
         month++;
-        let shortTime = twoDigits(date) + " - " + twoDigits(month) + " - " + year + " " + twoDigits(hour) + ":" + twoDigits(minute) + ":" + twoDigits(seconds);
+        let shortTime = twoDigits(date) + "-" + twoDigits(month) + "-" + year + " " + twoDigits(hour) + ":" + twoDigits(minute) + ":" + twoDigits(seconds);
         return shortTime;
 
     }
