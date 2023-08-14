@@ -191,7 +191,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function calculateDistance(array){
         const latitudeDegDist = 111.321377778;
         const longitudeDegDist = 111.134861111;
-        let pilotLongitude = array[0].oi;
+        let pilotLongitude = array[0].oi / 60000;
         let pilotLatitude = array[0].ai / 60000;
         let deltaLatitude = pilotLatitude - watcherLatitude;
         let deltaLongitude = pilotLongitude - watcherLongitude;
