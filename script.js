@@ -10,7 +10,8 @@ const timeShiftElement = document.getElementById("timeShift");
 const shiftedDateElement = document.getElementById("shiftedDate");
 const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
-const inputButtonElement = document.getElementById("inputButtonElement")
+const inputButtonElement = document.getElementById("inputButtonElement");
+const accuracyObject = document.getElementById("accuracy");
 const options = {
     enableHighAccuracy: true
 }
@@ -27,6 +28,7 @@ let stack  = {
 let watcherLatitude = 0;
 let watcherLongitude = 0;
 let watcherHeading = 0;
+let watcherAccuracy = 0;
 let pilotLatitude = 0;
 let pilotLongitude = 0;
 
@@ -104,6 +106,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //timeObject.innerHTML = currentTime;
         watcherLatitude = position.coords.latitude;
         watcherLongitude = position.coords.longitude;
+        watcherAccuracy = position.coords.accuracy;
 
         //console.log(position.coords.speed, position.coords.heading , position.timestamp)
         stack.push(position.coords.speed, position.coords.heading , position.timestamp)
@@ -114,7 +117,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         watcherHeading = heading;
         speed10m = result[2];
         speed1h = result[3];
-        let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading];
+        let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
         fillWatcherData(dataArray);
 
         //spObject.innerHTML = (speed5 * 3.6).toFixed(1);
@@ -242,6 +245,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             updateData(directionObject,directionToPilot);
             rotateRider(directionToPilot);
         }
+        updateData(accuracyObject,array[5]);
     }
 
     function calculateAverageSpeed60(array){
