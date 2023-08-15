@@ -106,7 +106,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //timeObject.innerHTML = currentTime;
         watcherLatitude = position.coords.latitude;
         watcherLongitude = position.coords.longitude;
-        watcherAccuracy = position.coords.accuracy;
+        watcherAccuracy = Math.round(position.coords.accuracy);
 
         //console.log(position.coords.speed, position.coords.heading , position.timestamp)
         stack.push(position.coords.speed, position.coords.heading , position.timestamp)
