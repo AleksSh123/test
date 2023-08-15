@@ -17,18 +17,38 @@
     <div class="container firstLevelContainer">
         <div class="inputPilotClass row">
             <div class="headerClass">
-                <h6>Shlyapa web v.1.7</h6>
+                <h6>Shlyapa web v.1.8</h6>
             </div>
-            <div class="inputElementClass">
-                <input id="pilotId" type="text" value="4673">
-                <input id="timeShift" type="text">
-                <label for="inputPilotButton" class="inputButtonClass" id="inputButtonElement"><input type="button" id="inputPilotButton"  value="Введите летуна" onclick="getPilot()"></label>
-                
+            <div class="inputContainerClass">
+                <div class="inputElementClass row gx-1">
+                    <div class="col-3 text-end">
+                         ID:
+                    </div>
+                    <div class="col-9">
+                        <input id="pilotId" type="text" value="4673" size="12">
+                    </div>
+                </div>
+                <div class="inputElementClass row gx-1">
+                    <div class="col-3 text-end">
+                        Timeshift:
+                    </div>
+                    <div class="col-9">
+                        <input id="timeShift" type="text" size="12">
+                    </div>
+                </div>
+                <div class="inputElementClass row">
+                    <div class="col-12 justify-content-center">
+                        <label for="inputPilotButton" class="inputButtonClass" id="inputButtonElement">
+                            <input type="button" id="inputPilotButton"  value="Введите летуна" onclick="getPilot()">
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="pilotDataElementClass row align-items-center">
-                <div class="col-5">
+                <div class="col-6">
                     <div>высота, м</div>
+                    <div>высота рел. м</div>
                     <div>скорость мгн. км/ч</div>
                     <div>скорость уср. км/ч</div>
                     <div>расстояние, км</div>
@@ -36,14 +56,15 @@
                     <div>дата наблюдения</div>
                     <div>данные от</div>
                 </div >
-                <div class="col-7">
-                    <div id="altitude">0</div>
-                    <div id="instantSpeed">00</div>
-                    <div id="averageSpeed">00</div>
-                    <div id="distance">000</div>
-                    <div id="direction">0</div>
-                    <div id="shiftedDate">00-00-0000 00:00:00</div>
-                    <div id="actualDate">00-00-0000 00:00:00</div>
+                <div class="col-6">
+                    <div class="noDataClass" id="altitude">0</div>
+                    <div class="noDataClass" id="groundHeight">0</div>
+                    <div class="noDataClass" id="instantSpeed">00</div>
+                    <div class="noDataClass" id="averageSpeed">00</div>
+                    <div class="noDataClass" id="distance">000</div>
+                    <div class="noDataClass" id="direction">0</div>
+                    <div class="noDataClass" id="shiftedDate">00-00-0000 00:00:00</div>
+                    <div class="noDataClass" id="actualDate">00-00-0000 00:00:00</div>
                 </div>
         </div>
         <div id="speedometr" class="speedometr row">

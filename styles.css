@@ -3,7 +3,7 @@ body {
 }
 div{
     
-    max-width: 430px;
+    max-width: 370px;
     
    
     
@@ -23,7 +23,7 @@ div{
     border: solid 1px;
 }
 .speedometr{
-    width: 430px;
+    width: 370px;
     border: solid 1px;
 }
 .inputPilotClass{
@@ -39,7 +39,10 @@ div{
     border: solid 1px;
 }
 label{
-    margin-top: 3px;
+    
+}
+.inputButtonClass{
+    margin-top: 7px;
 }
 .inputButtonClass::after{
     display: none;
@@ -50,4 +53,13 @@ label{
     margin-left: 0.5em;
     display: inline;
     color: green;
+}
+.inputElementClass{
+    margin: 2px;
+}
+.headerClass{
+    text-align: center;
+}
+.noDataClass{
+    color: red;
 }

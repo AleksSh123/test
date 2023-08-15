@@ -1,5 +1,6 @@
 const arrowObject=document.getElementById("line2");
 const altitudeObject = document.getElementById("altitude");
+const groundHeightObject = document.getElementById("groundHeight");
 const instantSpeedObject = document.getElementById("instantSpeed");
 const averageSpeedObject = document.getElementById("averageSpeed");
 const distanceObject = document.getElementById("distance");
@@ -26,6 +27,9 @@ let stack  = {
 let watcherLatitude = 0;
 let watcherLongitude = 0;
 let watcherHeading = 0;
+let pilotLatitude = 0;
+let pilotLongitude = 0;
+
 let position = navigator.geolocation.watchPosition(success,error,options);
 /*     let position = {
         coords:{
@@ -101,22 +105,26 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         watcherLatitude = position.coords.latitude;
         watcherLongitude = position.coords.longitude;
 
-        console.log(position.coords.speed, position.coords.heading , position.timestamp)
+        //console.log(position.coords.speed, position.coords.heading , position.timestamp)
         stack.push(position.coords.speed, position.coords.heading , position.timestamp)
         result = calculateAverage();
-        console.log(result)
+        //console.log(result)
         speed5 = result[0];
         heading = result[1];
         watcherHeading = heading;
         speed10m = result[2];
         speed1h = result[3];
+        let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading];
+        fillWatcherData(dataArray);
 
         //spObject.innerHTML = (speed5 * 3.6).toFixed(1);
-        headingObject.innerHTML = Math.round(heading);
+        //headingObject.innerHTML = Math.round(heading);
         //sp10mObject.innerHTML = (speed10m * 3.6).toFixed(1);
         //sp1hObject.innerHTML = (speed1h * 3.6).toFixed(1);
 
         //rotateRider(Math.round(heading));
+
+        
    
 
     }
@@ -163,30 +171,77 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     async function fillPilotData(pilotId, timeShift){
+        let pilotData = await getPilotData(pilotId, timeShift);
+        if (pilotData){
+            //noData(false);
+            //altitudeObject.innerHTML = pilotData[3];
+            updateData(altitudeObject, pilotData[3]);
+            //groundHeightObject.innerHTML = pilotData[8];
+            updateData(groundHeightObject, pilotData[8]);
+            //instantSpeedObject.innerHTML = pilotData[5];
+            updateData(instantSpeedObject, pilotData[5]);
+            //averageSpeedObject.innerHTML = pilotData[6];
+            updateData(averageSpeedObject, pilotData[6])
+            //actualDateElement.innerHTML = getShortDate(pilotData[0]);
+            updateData(actualDateElement,getShortDate(pilotData[0]));
+            pilotLatitude = pilotData[1];
+            pilotLongitude = pilotData[2];
+        } else{
+            //noData(true);
+        }
+    }
+
+    async function getPilotData(pilotId, timeShift){
         
         
         let currentTime = new Date().getTime();
         let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
-        shiftedDateElement.innerHTML = getShortDate(requestTime);
+        //shiftedDateElement.innerHTML = getShortDate(requestTime);
+        updateData(shiftedDateElement, getShortDate(requestTime))
         let data = await getLiveData(pilotId, requestTime);
         let array = data[pilotId];
         if (array){
             
             array.reverse();
-            altitudeObject.innerHTML = array[0].c;
+            let pilotBarometricAltitude = array[0].c;
+            let pilotGpsAltitude = array[0].h;
+            let pilotVelocity = array[0].v;
+            let groundHeight = array[0].s;
+            let pilotBearing = array[0].b;
+            let pilotTimestamp = array[0].d;
+            let pilotLatitude = array[0].ai / 60000;
+            let pilotLongitude = array[0].oi / 60000;
+            let pilotAverageVelocity60 = calculateAverageSpeed60(array);
+            let result = [pilotTimestamp, pilotLatitude, pilotLongitude, pilotBarometricAltitude,
+                 pilotGpsAltitude, pilotVelocity, pilotAverageVelocity60, pilotBearing, groundHeight]
+
+            return result;
+            /*altitudeObject.innerHTML = array[0].c;
             instantSpeedObject.innerHTML = array[0].v;
             actualDateElement.innerHTML = getShortDate(array[0].d);
             averageSpeedObject.innerHTML  = calculateAverageSpeed(array);
             distanceObject.innerHTML = calculateDistance(array);
             let heading = calculateDirection(array);
             directionObject.innerHTML = heading;
-            rotateRider(heading);
+            rotateRider(heading); */
+
+        } else {
+            return false;
         }
         
 
     }
 
-    function calculateAverageSpeed(array){
+    function fillWatcherData(array){
+        //distanceObject.innerHTML = calculateDistance(array);
+        updateData(distanceObject, calculateDistance(array));
+        let directionToPilot = calculateDirection(array);
+        //directionObject.innerHTML = directionToPilot;
+        updateData(directionObject,directionToPilot);
+        rotateRider(directionToPilot);
+    }
+
+    function calculateAverageSpeed60(array){
         let speedSumm = 0;
         for (let i = 0; i < 60; i++){
             speedSumm += array[i].v;
@@ -200,15 +255,16 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         const longitudeDegDist = 111.134861111;
         //let watcherLatitude = 56;
         //let watcherLongitude = 92;
-        let pilotLongitude = array[0].oi / 60000;
-        let pilotLatitude = array[0].ai / 60000;
-        let deltaLatitude = pilotLatitude - watcherLatitude;
-        let deltaLongitude = pilotLongitude - watcherLongitude;
-        let distanceLatitudeKm = deltaLatitude * latitudeDegDist * Math.cos(watcherLatitude);
+        let latitudeA  = array[0];
+        let longitudeA = array[1];
+        let latitudeB = array[2];
+        let longitudeB = array[3];
+        let deltaLatitude = latitudeB - latitudeA;
+        let deltaLongitude = longitudeB - longitudeA;
+        let distanceLatitudeKm = deltaLatitude * latitudeDegDist * Math.cos(latitudeA);
         let distanceLongitudeKm = deltaLongitude * longitudeDegDist;
         let distance = Math.hypot(distanceLatitudeKm, distanceLongitudeKm);
         let result = distance.toFixed(3);
-        //return result;
         return result;
     }
 
@@ -216,35 +272,48 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let watcherLatitude = 55;
         //let watcherLongitude = 93;
         //let watcherHeading = 300;
-        let pilotLongitude = array[0].oi / 60000;
-        let pilotLatitude = array[0].ai / 60000;
-        watcherLatitude = watcherLatitude * Math.PI / 180;
-        watcherLongitude = watcherLongitude * Math.PI / 180;
-        pilotLatitude = pilotLatitude * Math.PI / 180;
-        pilotLongitude = pilotLongitude * Math.PI / 180;
-        const deltaLongitude = pilotLongitude - watcherLongitude;
-        const wLatCos = Math.cos(watcherLatitude);
-        const wLatSin = Math.sin(watcherLatitude);
-        const pLatCos = Math.cos(pilotLatitude);
-        const pLatSin = Math.sin(pilotLatitude);
-        const deltaCos = Math.cos(deltaLongitude);
-        const deltaSin = Math.sin(deltaLongitude);
-        const x = (wLatCos * pLatSin) - (wLatSin * pLatCos * deltaCos);
-        const y = deltaSin * pLatCos;
+
+        let latitudeA  = array[0];
+        let longitudeA = array[1];
+        let latitudeB = array[2];
+        let longitudeB = array[3];
+
+        //let pilotLongitude = array[0].oi / 60000;
+        //let pilotLatitude = array[0].ai / 60000;
+        //watcherLatitude = watcherLatitude * Math.PI / 180;
+        //watcherLongitude = watcherLongitude * Math.PI / 180;
+        //pilotLatitude = pilotLatitude * Math.PI / 180;
+        //pilotLongitude = pilotLongitude * Math.PI / 180;
+
+        const deltaLongitudeRad = degToRad(longitudeB) - degToRad(longitudeA);
+        //const deltaLongitude = pilotLongitude - watcherLongitude;
+        const aLatCos = Math.cos(latitudeA);
+        //const wLatCos = Math.cos(watcherLatitude);
+        const aLatSin = Math.sin(latitudeA);
+        //const wLatSin = Math.sin(watcherLatitude);
+        const bLatCos = Math.cos(latitudeB);
+        //const pLatCos = Math.cos(pilotLatitude);
+        const bLatSin = Math.cos(latitudeB)
+        //const pLatSin = Math.sin(pilotLatitude);
+        const deltaCos = Math.cos(deltaLongitudeRad);
+        const deltaSin = Math.sin(deltaLongitudeRad);
+        const x = (aLatCos * bLatSin) - (aLatSin * bLatCos * deltaCos);
+        const y = deltaSin * bLatCos;
         //const arg = (-y / x)
         z = Math.atan2(-y, x);
-        z = z * 180 / Math.PI;
+        z = z * 180 / Math.PI; //to degree
         if (z > 0){
-            z = 360 - z;
+            azimut = 360 - z;
         } else{
-            z = -z;
+            azimut = -z;
         }
-        let direction = z - watcherHeading;
-        if (direction < 0) {
-            direction = 360 + direction;
+        let externalDirection = array[4];
+        let directionToPilot = azimut - externalDirection;
+        if (directionToPilot < 0) {
+            directionToPilot = 360 + directionToPilot;
         }
 
-        return Math.round(direction);
+        return Math.round(directionToPilot);
     }
 
     function getCurrentCoords(){
@@ -272,4 +341,28 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         return value;
     }
 
+    function noData(value){
+        if (value){
+            altitudeObject.classList.add("noDataClass");
+            groundHeightObject.classList.add("noDataClass");
+            instantSpeedObject.classList.add("noDataClass");
+            averageSpeedObject.classList.add("noDataClass");
+            actualDateElement.classList.add("noDataClass");
+        } else{
+            altitudeObject.classList.remove("noDataClass");
+            groundHeightObject.classList.remove("noDataClass");
+            instantSpeedObject.classList.remove("noDataClass");
+            averageSpeedObject.classList.remove("noDataClass");
+            actualDateElement.classList.remove("noDataClass");
+        }
+    }
+
+    function updateData(element,data){
+        element.classList.remove("noDataClass");
+        element.innerHTML = data;
+    }
+
+    function degToRad(angle){
+        return angle * Math.PI / 180;
+    }
     //setInterval(success,1000,position);
