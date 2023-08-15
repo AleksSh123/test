@@ -235,6 +235,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function fillWatcherData(array){
         //distanceObject.innerHTML = calculateDistance(array);
         updateData(distanceObject, calculateDistance(array));
+        updateData(distanceObject,array)
         let directionToPilot = calculateDirection(array);
         //directionObject.innerHTML = directionToPilot;
         updateData(directionObject,directionToPilot);
