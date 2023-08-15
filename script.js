@@ -234,12 +234,14 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
     function fillWatcherData(array){
         //distanceObject.innerHTML = calculateDistance(array);
-        updateData(distanceObject, calculateDistance(array));
-        updateData(distanceObject,array)
-        let directionToPilot = calculateDirection(array);
-        //directionObject.innerHTML = directionToPilot;
-        updateData(directionObject,directionToPilot);
-        rotateRider(directionToPilot);
+        if (array[2]!=0 && array[3]!=0 && array[4]!=0){
+            updateData(distanceObject, calculateDistance(array));
+            //updateData(distanceObject,array)
+            let directionToPilot = calculateDirection(array);
+            //directionObject.innerHTML = directionToPilot;
+            updateData(directionObject,directionToPilot);
+            rotateRider(directionToPilot);
+        }
     }
 
     function calculateAverageSpeed60(array){
