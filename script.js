@@ -31,6 +31,9 @@ let watcherHeading = 0;
 let watcherAccuracy = 0;
 let pilotLatitude = 0;
 let pilotLongitude = 0;
+let timerPilot = 0;
+
+setPointerColor("red");
 
 let position = navigator.geolocation.watchPosition(success,error,options);
 /*     let position = {
@@ -79,31 +82,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         speedAverage1h = speedSumm1h / count1hWatches;
         return [speedAverage5, headingAverage5, speedAverage10m, speedAverage1h];
     }
-    //rotateRider(250);
+
     
     function success(position){
         let currentTime = new Date();
         let result = new Array();
-
-        //gpsEmulation();
-
-        //console.log(currentTime);
-        //console.log("1!");
-        //console.log(position.coords.latitude);
-        //console.log("2!");
-        /*    position.coords.latitude = Math.random() * 360;
-            position.coords.longitude = Math.random() * 360;
-            position.coords.speed = Math.random() * 3;
-            position.coords.heading = Math.random() * 120;
-        */
-
-
-        //console.log(position.coords.latitude)
-        //console.log("intermediate");
-        //console.log(position.coords.speed)
-        //latObject.innerHTML = position.coords.latitude;
-        //longObject.innerHTML = position.coords.longitude;
-        //timeObject.innerHTML = currentTime;
         watcherLatitude = position.coords.latitude;
         watcherLongitude = position.coords.longitude;
         watcherAccuracy = Math.round(Number(position.coords.accuracy));
@@ -167,9 +150,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let pilotId = pilotIdElement.value;
         let timeShift = timeShiftElement.value * 1000;
         inputButtonElement.classList.add("inputButtonClassPressed");
-        //fillPilotData(data[pilotId]);
-        //debugger;
-        setInterval(fillPilotData,5000,pilotId,timeShift)
+        if (timerPilot){
+            clearInterval(timerPilot);
+        }   
+        fillPilotData(pilotId,timeShift);
+        timerPilot = setInterval(fillPilotData,5000,pilotId,timeShift);
 
     }
 
@@ -243,6 +228,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             let directionToPilot = calculateDirection(array);
             //directionObject.innerHTML = directionToPilot;
             updateData(directionObject,directionToPilot);
+            setPointerColor("#4aa8dc");
             rotateRider(directionToPilot);
         }
         updateData(accuracyObject,array[5]);
@@ -373,3 +359,12 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         return angle * Math.PI / 180;
     }
     //setInterval(success,1000,position);
+    function setPointerColor(color){
+        let markerObject = document.getElementById("riderArrow");
+        let lineObject = document.getElementById("line2");
+        let circleObject = document.getElementById("circle");
+        markerObject.setAttribute("stroke",color);
+        markerObject.setAttribute("fill",color);
+        lineObject.setAttribute("stroke",color);
+        circleObject.setAttribute("stroke",color);
+    }
