@@ -47,7 +47,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let count5Watches = 0;
         let count10mWathches = 0;
         //let count1hWatches = 0;
-
+        let headingAverage = 0;
         let countHeading = 0;
 
         for (let i = averagerArray.length - 1; i >= 0 ; i--){
@@ -85,7 +85,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             } */
         }
         speedAverage5 = speedSumm5 / 5;
-        headingAverage5 = headingAverage;
+        let headingAverage5 = headingAverage;
         speedAverage10m = speedSumm10m / count10mWathches;
         //speedAverage1h = speedSumm1h / count1hWatches;
         return [speedAverage5, headingAverage5, speedAverage10m];
