@@ -107,7 +107,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         heading = result[1];
         watcherHeading = heading;
         speed10m = result[2];
-        speed1h = result[3];
+        //speed1h = result[3];
         let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
         fillWatcherData(dataArray);
     }
