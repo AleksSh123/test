@@ -114,6 +114,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function error(){
 
         updateData(accuracyObject,"no GPS available");
+        //calculateDirection([56,90,56,89])
     }
     function rotateRider(angle){
         console.log(angle);
@@ -205,6 +206,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         if (array[2]!=0 && array[3]!=0 && array[4]!=0){
             updateData(distanceObject, calculateDistance(array));
             let directionToPilot = calculateDirection(array);
+            
             updateData(directionObject,directionToPilot);
             setPointerColor("#4aa8dc");
             rotateRider(directionToPilot);
@@ -245,29 +247,33 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let watcherLatitude = 55;
         //let watcherLongitude = 93;
         //let watcherHeading = 300;
+        //all angles in Rad
+        let azimut = NaN;
 
-        let latitudeA  = array[0];
-        let longitudeA = array[1];
-        let latitudeB = array[2];
-        let longitudeB = array[3];
+        let latitudeA  = degToRad(array[0]);
+        let longitudeA = degToRad(array[1]);
+        let latitudeB = degToRad(array[2]);
+        let longitudeB = degToRad(array[3]);
 
 
-        const deltaLongitudeRad = degToRad(longitudeB) - degToRad(longitudeA);
+        const deltaLongitude = longitudeB - longitudeA;
         const aLatCos = Math.cos(latitudeA);
         const aLatSin = Math.sin(latitudeA);
         const bLatCos = Math.cos(latitudeB);
-        const bLatSin = Math.cos(latitudeB)
-        const deltaCos = Math.cos(deltaLongitudeRad);
-        const deltaSin = Math.sin(deltaLongitudeRad);
+        const bLatSin = Math.sin(latitudeB)
+        const deltaCos = Math.cos(deltaLongitude);
+        const deltaSin = Math.sin(deltaLongitude);
         const x = (aLatCos * bLatSin) - (aLatSin * bLatCos * deltaCos);
         const y = deltaSin * bLatCos;
-        z = Math.atan2(-y, x);
+        //debugger
+        let z = Math.atan2(-y, x);
         z = z * 180 / Math.PI; //to degree
         if (z > 0){
             azimut = 360 - z;
         } else{
             azimut = -z;
         }
+        debugger;
         updateData(averageSpeedObject,azimut);
         let externalDirection = array[4];
         let directionToPilot = azimut - externalDirection;
