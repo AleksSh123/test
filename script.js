@@ -210,6 +210,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             rotateRider(directionToPilot);
         }
         updateData(accuracyObject,array[5]);
+        updateData(instantSpeedObject,array[4]);
+        
     }
 
     function calculateAverageSpeed60(array){
@@ -266,6 +268,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         } else{
             azimut = -z;
         }
+        updateData(averageSpeedObject,azimut);
         let externalDirection = array[4];
         let directionToPilot = azimut - externalDirection;
         if (directionToPilot < 0) {
