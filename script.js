@@ -273,7 +273,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         } else{
             azimut = -z;
         }
-        debugger;
+        //debugger;
         updateData(averageSpeedObject,azimut);
         let externalDirection = array[4];
         let directionToPilot = azimut - externalDirection;
