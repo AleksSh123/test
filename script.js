@@ -55,6 +55,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
 
     function calculateSpeedAverage(){
+        if (speedAveragerArray.length == 0) return [null,null];
         let speedSumm5 = 0;
         //let headingSumm = 0;
         let speedSumm10m = 0;
@@ -111,6 +112,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     function calculateHeadingAverage(){
+        if (headingAveragerArray.length == 0) return null;
         let headingSumm = 0;
         let headingResultCount = 0;
         for (let i = headingAveragerArray.length - 1; i >= 0 ; i--){
@@ -142,8 +144,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         console.log("prepare speed calculating")
         resultSpeed = calculateSpeedAverage();
         //console.log(result)
-        speed5 = result[0];
-        speed10m = result[1];
+        speed5 = resultSpeed[0];
+        speed10m = resultSpeed[1];
         console.log("prepare heading calculating")
         watcherHeading = calculateHeadingAverage();
 
