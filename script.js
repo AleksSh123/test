@@ -123,6 +123,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         updateData(longO, position.coords.longitude);
         updateData(spO, position.coords.speed);
         updateData(heO,position.coords.heading);
+        console.log(position.coords.latitude, position.coords.longitude, position.coords.speed, position.coords.heading, position.coords.accuracy)
 
         fillWatcherData(dataArray);
     }
