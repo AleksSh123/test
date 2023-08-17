@@ -70,6 +70,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         console.log("array.lngt is " + speedAveragerArray.length);
         for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
             console.log("array.length is " + speedAveragerArray.length);
+            console.log(i > (speedAveragerArray.length - 6));
             if (i > (speedAveragerArray.length - 6)){
 
                 speedSumm5 += averagerArray[i][0];
