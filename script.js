@@ -123,7 +123,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         updateData(longO, position.coords.longitude);
         updateData(spO, position.coords.speed);
         updateData(heO,position.coords.heading);
-        console.log(position.coords.latitude, position.coords.longitude, position.coords.speed, position.coords.heading, position.coords.accuracy)
+        //console.log(position.coords.latitude, position.coords.longitude, position.coords.speed, position.coords.heading, position.coords.accuracy)
 
         fillWatcherData(dataArray);
     }
@@ -328,7 +328,13 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
     function updateData(element,data){
         element.classList.remove("noDataClass");
+        if (data === null){
+            element.innerHTML = "null";
+        } else if(Number.isNaN(data)){
+            element.innerHTML = "NaN";
+        } else{
         element.innerHTML = data;
+        }
     }
 
     function degToRad(angle){
