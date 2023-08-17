@@ -65,6 +65,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let count1hWatches = 0;
         //let headingAverage = 0;
         //let countHeading = 0;
+        console.log("starting calculate speed")
 
         for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
             if (i > speedAveragerArray.length - 6){
@@ -75,7 +76,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
                 speedSumm10m += averagerArray[i][0];
                 count10mWathches++;
             }
-            
+            console.log(speedSumm5,countSpeed5Watches,speedSumm10m,count10mWathches);
             /*if (i > averagerArray.length - 6){
                 speedSumm5 += averagerArray[i][0];
                 if ((averagerArray[i][1] - headingSumm5) < 180) {
@@ -97,6 +98,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let headingAverage5 = headingAverage;
         speedAverage10m = speedSumm10m / count10mWathches;
         //speedAverage1h = speedSumm1h / count1hWatches;
+        console.log(speedAverage5,speedAverage10m)
         return [speedAverage5, speedAverage10m];
     }
 
