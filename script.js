@@ -22,15 +22,25 @@ const options = {
     enableHighAccuracy: true
 }
 const url = "https://lt.flymaster.net/wlb/getLiveData.php";
-let averagerArray = new Array(); //will be [speed,heading,timestamp]
-let stack  = {
+let speedAveragerArray = new Array(); //will be [speed,heading,timestamp]
+let headingAveragerArray = new Array(); //will be [heading]
+let speedStack  = {
     push(speed, heading, time){
-        averagerArray.push([speed, heading, time]);
-        if (averagerArray.length > 3600){
-            averagerArray.shift();
+        speedAveragerArray.push([speed, heading, time]);
+        if (speedAveragerArray.length > 3600){
+            speedAveragerArray.shift();
         }
     }
 }
+let headingStack = {
+    push(heading){
+        headingAveragerArray.push([heading]);
+        if (headingAveragerArray.length > 5){
+            headingAveragerArray.shift();
+        }
+    }   
+}
+
 let watcherLatitude = 0;
 let watcherLongitude = 0;
 let watcherHeading = 0;
@@ -44,35 +54,28 @@ setPointerColor("red");
 let position = navigator.geolocation.watchPosition(success,error,options);
 
 
-    function calculateAverage(){
+    function calculateSpeedAverage(){
         let speedSumm5 = 0;
-        let headingSumm = 0;
+        //let headingSumm = 0;
         let speedSumm10m = 0;
         //let speedSumm1h = 0;
         let currentTime = new Date();
-        //let count5Watches = 0;
+        let countSpeed5Watches = 0;
         let count10mWathches = 0;
         //let count1hWatches = 0;
-        let headingAverage = 0;
-        let countHeading = 0;
+        //let headingAverage = 0;
+        //let countHeading = 0;
 
-        for (let i = averagerArray.length - 1; i >= 0 ; i--){
-            if (averagerArray[i][1] != 0 && countHeading < 6){ //count first(last) 5 non-zero heading
-                countHeading++; 
-                if ((averagerArray[i][1] - headingAverage > 180) && (averagerArray[i][1] < headingAverage)){
-                    headingSumm += averagerArray[i][1] - 360;
-                } else {
-                    headingSumm += averagerArray[i][1];
-                }
-                headingAverage = headingSumm / countHeading;
+        for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
+            if (i > speedAveragerArray.length - 6){
+                speedSumm5 += averagerArray[i][0];
+                countSpeed5Watches++;
             }
-            if ((currentTime.getTime() - averagerArray[i][2])<60000){
+            if ((currentTime.getTime() - speedAveragerArray[i][2])<60000){
                 speedSumm10m += averagerArray[i][0];
                 count10mWathches++;
             }
-            if (i > averagerArray.length - 6){
-                speedSumm5 += averagerArray[i][0];
-            }
+            
             /*if (i > averagerArray.length - 6){
                 speedSumm5 += averagerArray[i][0];
                 if ((averagerArray[i][1] - headingSumm5) < 180) {
@@ -90,37 +93,56 @@ let position = navigator.geolocation.watchPosition(success,error,options);
                 count1hWatches++;
             } */
         }
-        speedAverage5 = speedSumm5 / 5;
-        let headingAverage5 = headingAverage;
+        speedAverage5 = speedSumm5 / countSpeed5Watches;
+        //let headingAverage5 = headingAverage;
         speedAverage10m = speedSumm10m / count10mWathches;
         //speedAverage1h = speedSumm1h / count1hWatches;
-        return [speedAverage5, headingAverage5, speedAverage10m];
+        return [speedAverage5, speedAverage10m];
+    }
+
+    function calculateHeadingAverage(){
+        let headingSumm = 0;
+        let headingResultCount = 0;
+        for (let i = headingAveragerArray.length - 1; i >= 0 ; i--){
+            headingSumm += headingAveragerArray[i];
+            headingResultCount++
+        }
+        return headingSumm / headingResultCount;
     }
 
     
     function success(position){
         let currentTime = new Date();
         let result = new Array();
+        let resultSpeed = [];
+
         watcherLatitude = position.coords.latitude;
         watcherLongitude = position.coords.longitude;
         watcherAccuracy = Math.round(Number(position.coords.accuracy));
 
         //console.log(position.coords.speed, position.coords.heading , position.timestamp)
-        stack.push(position.coords.speed, position.coords.heading , position.timestamp)
-        result = calculateAverage();
+        if (definedValue(position.coords.speed)){
+            speedStack.push(position.coords.speed, position.coords.heading , position.timestamp);
+        }
+        if (definedValue(position.coords.heading)){
+            headingStack.push(position.coords.heading);
+        }
+        resultSpeed = calculateSpeedAverage();
         //console.log(result)
         speed5 = result[0];
-        heading = result[1];
-        watcherHeading = heading;
-        speed10m = result[2];
+        speed10m = result[1];
+  
+        watcherHeading = calculateHeadingAverage();
+
+
         //speed1h = result[3];
         let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
 
         updateData(instantSpeedObject,position.coords.heading);
         updateData(averageSpeedObject, heading);
 
-        updateData(latO, position.coords.latitude);
-        updateData(longO, position.coords.longitude);
+        updateData(latO, speed5);
+        updateData(longO, watcherHeading);
         updateData(spO, position.coords.speed);
         updateData(heO,position.coords.heading);
         //console.log(position.coords.latitude, position.coords.longitude, position.coords.speed, position.coords.heading, position.coords.accuracy)
@@ -349,4 +371,12 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         markerObject.setAttribute("fill",color);
         lineObject.setAttribute("stroke",color);
         circleObject.setAttribute("stroke",color);
+    }
+
+    function definedValue(value){
+        if ((value === null ) || (Number.isNaN(value))){
+            return false;
+        } else{
+            return true;
+        }
     }
