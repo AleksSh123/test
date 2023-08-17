@@ -154,7 +154,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
 
         updateData(instantSpeedObject,position.coords.heading);
-        updateData(averageSpeedObject, heading);
+        updateData(averageSpeedObject, watcherHeading);
         console.log("writing data to web")
         updateData(latO, speed5);
         updateData(longO, watcherHeading);
