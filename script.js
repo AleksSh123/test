@@ -123,15 +123,18 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //console.log(position.coords.speed, position.coords.heading , position.timestamp)
         if (definedValue(position.coords.speed)){
             speedStack.push(position.coords.speed, position.coords.heading , position.timestamp);
+            console.log("pushing speed")
         }
         if (definedValue(position.coords.heading)){
             headingStack.push(position.coords.heading);
+            console.log("pushing heading")
         }
+        console.log("prepare speed calculating")
         resultSpeed = calculateSpeedAverage();
         //console.log(result)
         speed5 = result[0];
         speed10m = result[1];
-  
+        console.log("prepare heading calculating")
         watcherHeading = calculateHeadingAverage();
 
 
@@ -140,7 +143,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
         updateData(instantSpeedObject,position.coords.heading);
         updateData(averageSpeedObject, heading);
-
+        console.log("writing data to web")
         updateData(latO, speed5);
         updateData(longO, watcherHeading);
         updateData(spO, position.coords.speed);
