@@ -67,7 +67,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let countHeading = 0;
         console.log("starting calculate speed")
         console.log("here is Array" + speedAveragerArray);
-
+        console.log("array.lngt is " + speedAveragerArray.length)
         for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
             console.log("array.length is " + speedAveragerArray.length);
             if (i > speedAveragerArray.length - 6){
