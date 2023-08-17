@@ -109,6 +109,10 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         speed10m = result[2];
         //speed1h = result[3];
         let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
+
+        updateData(instantSpeedObject,position.coords.heading);
+        updateData(averageSpeedObject, heading);
+
         fillWatcherData(dataArray);
     }
     function error(){
@@ -212,7 +216,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             rotateRider(directionToPilot);
         }
         updateData(accuracyObject,array[5]);
-        updateData(instantSpeedObject,array[4]);
+        //updateData(instantSpeedObject,array[4]);
         
     }
 
@@ -249,6 +253,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let watcherHeading = 300;
         //all angles in Rad
         let azimut = NaN;
+        let externalDirection = array[4];
 
         let latitudeA  = degToRad(array[0]);
         let longitudeA = degToRad(array[1]);
@@ -274,8 +279,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             azimut = -z;
         }
         //debugger;
-        updateData(averageSpeedObject,azimut);
-        let externalDirection = array[4];
+        //updateData(averageSpeedObject,azimut);
+        
         let directionToPilot = azimut - externalDirection;
         if (directionToPilot < 0) {
             directionToPilot = 360 + directionToPilot;
@@ -307,22 +312,6 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             value = "0" + String(value);
         }
         return value;
-    }
-
-    function noData(value){
-        if (value){
-            altitudeObject.classList.add("noDataClass");
-            groundHeightObject.classList.add("noDataClass");
-            instantSpeedObject.classList.add("noDataClass");
-            averageSpeedObject.classList.add("noDataClass");
-            actualDateElement.classList.add("noDataClass");
-        } else{
-            altitudeObject.classList.remove("noDataClass");
-            groundHeightObject.classList.remove("noDataClass");
-            instantSpeedObject.classList.remove("noDataClass");
-            averageSpeedObject.classList.remove("noDataClass");
-            actualDateElement.classList.remove("noDataClass");
-        }
     }
 
     function updateData(element,data){
