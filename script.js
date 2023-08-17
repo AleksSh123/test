@@ -12,6 +12,12 @@ const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const accuracyObject = document.getElementById("accuracy");
+
+const latO = document.getElementById("lat");
+const longO = document.getElementById("long");
+const spO = document.getElementById("sp");
+const heO = document.getElementById("he");
+
 const options = {
     enableHighAccuracy: true
 }
@@ -112,6 +118,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
         updateData(instantSpeedObject,position.coords.heading);
         updateData(averageSpeedObject, heading);
+
+        updateData(latO, position.coords.latitude);
+        updateData(longO, position.coords.longitude);
+        updateData(spO, position.coords.speed);
+        updateData(heO,position.coords.heading);
 
         fillWatcherData(dataArray);
     }
