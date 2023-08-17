@@ -65,18 +65,23 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let count1hWatches = 0;
         //let headingAverage = 0;
         //let countHeading = 0;
-        console.log("starting calculate speed")
+        console.log("starting calculate speed");
         console.log("here is Array" + speedAveragerArray);
-        console.log("array.lngt is " + speedAveragerArray.length)
+        console.log("array.lngt is " + speedAveragerArray.length);
         for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
             console.log("array.length is " + speedAveragerArray.length);
             if (i > speedAveragerArray.length - 6){
+
                 speedSumm5 += averagerArray[i][0];
                 countSpeed5Watches++;
+                console.log("speedsum5 is " + speedSumm5);
+                console.log("countSpeed5Watches is " + countSpeed5Watches);
             }
             if ((currentTime.getTime() - speedAveragerArray[i][2])<60000){
                 speedSumm10m += averagerArray[i][0];
                 count10mWathches++;
+                console.log("speedSum10m is " + speedSumm10m);
+                console.log("count10Watches is " + count10mWathches);
             }
             console.log(speedSumm5,countSpeed5Watches,speedSumm10m,count10mWathches);
             /*if (i > averagerArray.length - 6){
