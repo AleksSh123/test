@@ -123,12 +123,12 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let headingAverageSummSin = 0;
         let headingAverageRad = 0;
         for (let i = headingAveragerArray.length - 1; i >= 0 ; i--){
-            headingSummCos = Math.cos(degToRad(Number(headingAveragerArray[i])));
-            headingSummSin = Math.sin(degToRad(Number(headingAveragerArray[i])));
+            headingSummCos += Math.cos(degToRad(Number(headingAveragerArray[i])));
+            headingSummSin += Math.sin(degToRad(Number(headingAveragerArray[i])));
             headingResultCount++
         }
-        headingAverageSummCos = headingAverageSummCos / headingResultCount;
-        headingAverageSummSin = headingAverageSummSin / headingResultCount;
+        headingAverageSummCos = headingSummCos / headingResultCount;
+        headingAverageSummSin = headingSummSin / headingResultCount;
         headingAverageRad = Math.atan2(headingAverageSummSin / headingAverageSummCos);
         return radToDeg(headingAverageRad);
     }
