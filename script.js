@@ -284,7 +284,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             rotateRider(directionToPilot);
 
             //####################################################
-            updateData(azimutO, azimutTest);
+            
             updateData(dAzimutO,directionToPilot);
         }   //####################################################
         updateData(accuracyObject,array[5]);
@@ -346,7 +346,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let z = Math.atan2(-y, x);
         z = radToDeg(z); //to degree
 
-        azimutTest = z;
+        updateData(azimutO, z);
 
         if (z > 0){
             azimut = 360 - z;
