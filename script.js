@@ -362,7 +362,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             directionToPilot = 360 + directionToPilot;
         } */
 
-        return Math.round(directionToPilot);
+        return  -Math.round(directionToPilot);
     }
 
     function getCurrentCoords(){
