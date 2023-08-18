@@ -113,13 +113,24 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
     function calculateHeadingAverage(){
         if (headingAveragerArray.length == 0) return null;
-        let headingSumm = 0;
+        //let headingSumm = 0;
         let headingResultCount = 0;
+        //let headingCos = 0;
+        //let headingSin = 0;
+        let headingSummCos = 0;
+        let headingSummSin = 0;
+        let headingAverageSummCos = 0;
+        let headingAverageSummSin = 0;
+        let headingAverageRad = 0;
         for (let i = headingAveragerArray.length - 1; i >= 0 ; i--){
-            headingSumm += Number(headingAveragerArray[i]);
+            headingSummCos = Math.cos(degToRad(Number(headingAveragerArray[i])));
+            headingSummSin = Math.sin(degToRad(Number(headingAveragerArray[i])));
             headingResultCount++
         }
-        return headingSumm / headingResultCount;
+        headingAverageSummCos = headingAverageSummCos / headingResultCount;
+        headingAverageSummSin = headingAverageSummSin / headingResultCount;
+        headingAverageRad = Math.atan2(headingAverageSummSin / headingAverageSummCos);
+        return radToDeg(headingAverageRad);
     }
 
     
@@ -153,8 +164,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //speed1h = result[3];
         let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
 
-        updateData(instantSpeedObject,position.coords.heading);
-        updateData(averageSpeedObject, watcherHeading);
+        //updateData(instantSpeedObject,position.coords.heading);
+        //updateData(averageSpeedObject, watcherHeading);
         console.log("writing data to web")
         updateData(latO, speed5);
         updateData(longO, watcherHeading);
@@ -321,7 +332,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         const y = deltaSin * bLatCos;
         //debugger
         let z = Math.atan2(-y, x);
-        z = z * 180 / Math.PI; //to degree
+        z = radToDeg(z); //to degree
         if (z > 0){
             azimut = 360 - z;
         } else{
@@ -377,6 +388,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function degToRad(angle){
         return angle * Math.PI / 180;
     }
+
+    function radToDeg(angle){
+        return angle * 180 / Math.PI;
+    }
+    
     //setInterval(success,1000,position);
     function setPointerColor(color){
         let markerObject = document.getElementById("riderArrow");
