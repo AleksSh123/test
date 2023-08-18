@@ -13,10 +13,10 @@ const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const accuracyObject = document.getElementById("accuracy");
 
-const latO = document.getElementById("lat");
-const longO = document.getElementById("long");
-const spO = document.getElementById("sp");
-const heO = document.getElementById("he");
+const iHeadO = document.getElementById("iHeading");
+const aHeadO = document.getElementById("aHeading");
+const azimutO = document.getElementById("azimut");
+const dAzimutO = document.getElementById("dAzimut");
 
 const options = {
     enableHighAccuracy: true
@@ -122,19 +122,19 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let headingAverageSummCos = 0;
         let headingAverageSummSin = 0;
         let headingAverageRad = 0;
-        console.log("headingAverageArray.length is " + headingAveragerArray.length)
+        //console.log("headingAverageArray.length is " + headingAveragerArray.length)
         for (let i = headingAveragerArray.length - 1; i >= 0 ; i--){
             headingSummCos += Math.cos(degToRad(Number(headingAveragerArray[i])));
             headingSummSin += Math.sin(degToRad(Number(headingAveragerArray[i])));
             headingResultCount++
         }
-        console.log("headingSummCos: " + headingSummCos);
-        console.log("headingSummSin: " + headingSummSin);
+        //console.log("headingSummCos: " + headingSummCos);
+        //console.log("headingSummSin: " + headingSummSin);
         
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
         headingAverageRad = Math.atan2(headingAverageSummSin, headingAverageSummCos);
-        console.log("headingAverageRad: " + headingAverageRad);
+        //console.log("headingAverageRad: " + headingAverageRad);
         return radToDeg(headingAverageRad);
     }
 
@@ -172,10 +172,9 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //updateData(instantSpeedObject,position.coords.heading);
         //updateData(averageSpeedObject, watcherHeading);
         console.log("writing data to web")
-        updateData(latO, speed5);
-        updateData(longO, watcherHeading);
-        updateData(spO, position.coords.speed);
-        updateData(heO,position.coords.heading);
+        updateData(iHeadO, position.coords.heading);
+        updateData(aHeadO, watcherHeading);
+
         //console.log(position.coords.latitude, position.coords.longitude, position.coords.speed, position.coords.heading, position.coords.accuracy)
 
         fillWatcherData(dataArray);
@@ -273,6 +272,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     function fillWatcherData(array){
+        let azimutTest =0;
         //distanceObject.innerHTML = calculateDistance(array);
         if (array[2]!=0 && array[3]!=0 && array[4]!=0){
             updateData(distanceObject, calculateDistance(array));
@@ -281,7 +281,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             updateData(directionObject,directionToPilot);
             setPointerColor("#4aa8dc");
             rotateRider(directionToPilot);
-        }
+
+            //####################################################
+            updateData(azimutO, azimutTest);
+            updateData(dAzimutO,directionToPilot);
+        }   //####################################################
         updateData(accuracyObject,array[5]);
         //updateData(instantSpeedObject,array[4]);
         
@@ -340,6 +344,9 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //debugger
         let z = Math.atan2(-y, x);
         z = radToDeg(z); //to degree
+
+        azimutTest = z;
+
         if (z > 0){
             azimut = 360 - z;
         } else{
