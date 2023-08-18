@@ -66,26 +66,26 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let count1hWatches = 0;
         //let headingAverage = 0;
         //let countHeading = 0;
-        console.log("starting calculate speed");
-        console.log("here is Array" + speedAveragerArray);
-        console.log("array.lngt is " + speedAveragerArray.length);
+        //console.log("starting calculate speed");
+        //console.log("here is Array" + speedAveragerArray);
+        //console.log("array.lngt is " + speedAveragerArray.length);
         for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
-            console.log("array.length is " + speedAveragerArray.length);
-            console.log(i > (speedAveragerArray.length - 6));
+            //console.log("array.length is " + speedAveragerArray.length);
+            //console.log(i > (speedAveragerArray.length - 6));
             if (i > (speedAveragerArray.length - 6)){
 
                 speedSumm5 += Number(speedAveragerArray[i][0]);
                 countSpeed5Watches++;
-                console.log("speedsum5 is " + speedSumm5);
-                console.log("countSpeed5Watches is " + countSpeed5Watches);
+                //console.log("speedsum5 is " + speedSumm5);
+                //console.log("countSpeed5Watches is " + countSpeed5Watches);
             }
             if ((currentTime.getTime() - speedAveragerArray[i][2])<60000){
                 speedSumm10m += Number(speedAveragerArray[i][0]);
                 count10mWathches++;
-                console.log("speedSum10m is " + speedSumm10m);
-                console.log("count10Watches is " + count10mWathches);
+                //console.log("speedSum10m is " + speedSumm10m);
+                //console.log("count10Watches is " + count10mWathches);
             }
-            console.log(speedSumm5,countSpeed5Watches,speedSumm10m,count10mWathches);
+            //console.log(speedSumm5,countSpeed5Watches,speedSumm10m,count10mWathches);
             /*if (i > averagerArray.length - 6){
                 speedSumm5 += averagerArray[i][0];
                 if ((averagerArray[i][1] - headingSumm5) < 180) {
@@ -107,7 +107,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //let headingAverage5 = headingAverage;
         speedAverage10m = speedSumm10m / count10mWathches;
         //speedAverage1h = speedSumm1h / count1hWatches;
-        console.log(speedAverage5,speedAverage10m)
+        //console.log(speedAverage5,speedAverage10m)
         return [speedAverage5, speedAverage10m];
     }
 
@@ -127,6 +127,9 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             headingSummSin += Math.sin(degToRad(Number(headingAveragerArray[i])));
             headingResultCount++
         }
+        console.log(headingAverageSummCos);
+        console.log(headingAverageSummSin);
+        console.log(headingAverageRad);
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
         headingAverageRad = Math.atan2(headingAverageSummSin / headingAverageSummCos);
@@ -146,18 +149,18 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //console.log(position.coords.speed, position.coords.heading , position.timestamp)
         if (definedValue(position.coords.speed)){
             speedStack.push(position.coords.speed, position.coords.heading , position.timestamp);
-            console.log("pushing speed")
+            //console.log("pushing speed")
         }
         if (definedValue(position.coords.heading)){
             headingStack.push(position.coords.heading);
-            console.log("pushing heading")
+            //console.log("pushing heading")
         }
-        console.log("prepare speed calculating")
+        //console.log("prepare speed calculating")
         resultSpeed = calculateSpeedAverage();
         //console.log(result)
         speed5 = resultSpeed[0];
         speed10m = resultSpeed[1];
-        console.log("prepare heading calculating")
+        //console.log("prepare heading calculating")
         watcherHeading = calculateHeadingAverage();
 
 
