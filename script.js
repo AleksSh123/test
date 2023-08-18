@@ -128,12 +128,13 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             headingSummSin += Math.sin(degToRad(Number(headingAveragerArray[i])));
             headingResultCount++
         }
-        console.log("headingAverageSummCos: " + headingAverageSummCos);
-        console.log("headingAverageSummSin: " + headingAverageSummSin);
-        console.log("headingAverageRad: " + headingAverageRad);
+        console.log("headingSummCos: " + headingSummCos);
+        console.log("headingSummSin: " + headingSummSin);
+        
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
         headingAverageRad = Math.atan2(headingAverageSummSin / headingAverageSummCos);
+        console.log("headingAverageRad: " + headingAverageRad);
         return radToDeg(headingAverageRad);
     }
 
