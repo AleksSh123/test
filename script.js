@@ -358,9 +358,9 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         //updateData(averageSpeedObject,azimut);
         
         let directionToPilot = azimut - externalDirection;
-        if (directionToPilot < 0) {
+        /*if (directionToPilot < 0) {
             directionToPilot = 360 + directionToPilot;
-        }
+        } */
 
         return Math.round(directionToPilot);
     }
