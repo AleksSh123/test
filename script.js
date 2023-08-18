@@ -134,7 +134,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
-        headingAverageRad = Math.atan2(headingAverageSummSin, headingAverageSummCos);
+        headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
         //console.log("headingAverageRad: " + headingAverageRad);
         return radToDeg(headingAverageRad);
     }
