@@ -17,6 +17,7 @@ const iHeadO = document.getElementById("iHeading");
 const aHeadO = document.getElementById("aHeading");
 const azimutO = document.getElementById("azimut");
 const dAzimutO = document.getElementById("dAzimut");
+let azimutTest =0;
 
 const options = {
     enableHighAccuracy: true
@@ -272,7 +273,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     function fillWatcherData(array){
-        let azimutTest =0;
+
         //distanceObject.innerHTML = calculateDistance(array);
         if (array[2]!=0 && array[3]!=0 && array[4]!=0){
             updateData(distanceObject, calculateDistance(array));
