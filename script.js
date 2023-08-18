@@ -214,7 +214,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function getPilot(){
         let pilotId = pilotIdElement.value;
         let timeShift = timeShiftElement.value * 1000;
-        //navigator.vibrate(100);
+        navigator.vibrate(100);
         inputButtonElement.classList.add("inputButtonClassPressed");
         
         if (timerPilot){
@@ -348,11 +348,12 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
         updateData(azimutO, z);
 
-        if (z > 0){
+        /*if (z > 0){
             azimut = 360 - z;
         } else{
             azimut = -z;
         }
+        */
         //debugger;
         //updateData(averageSpeedObject,azimut);
         
