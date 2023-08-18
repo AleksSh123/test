@@ -215,6 +215,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let pilotId = pilotIdElement.value;
         let timeShift = timeShiftElement.value * 1000;
         inputButtonElement.classList.add("inputButtonClassPressed");
+        navigator.vibrate(100);
         if (timerPilot){
             clearInterval(timerPilot);
         }   
