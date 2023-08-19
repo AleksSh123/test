@@ -215,8 +215,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         let pilotId = pilotIdElement.value;
         let timeShift = timeShiftElement.value * 1000;
         //navigator.vibrate(100);
-        const wakeLock = await navigator.wakeLock.request("screen");
-        console.log (wakeLock.status);
+        //const wakeLock = await navigator.wakeLock.request("screen");
+        //console.log (wakeLock.status);
         inputButtonElement.classList.add("inputButtonClassPressed");
         
         if (timerPilot){
