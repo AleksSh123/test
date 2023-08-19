@@ -13,10 +13,6 @@ const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const accuracyObject = document.getElementById("accuracy");
 
-const iHeadO = document.getElementById("iHeading");
-const aHeadO = document.getElementById("aHeading");
-const azimutO = document.getElementById("azimut");
-const dAzimutO = document.getElementById("dAzimut");
 let azimutTest =0;
 
 const options = {
@@ -58,84 +54,42 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function calculateSpeedAverage(){
         if (speedAveragerArray.length == 0) return [null,null];
         let speedSumm5 = 0;
-        //let headingSumm = 0;
         let speedSumm10m = 0;
-        //let speedSumm1h = 0;
         let currentTime = new Date();
         let countSpeed5Watches = 0;
         let count10mWathches = 0;
-        //let count1hWatches = 0;
-        //let headingAverage = 0;
-        //let countHeading = 0;
-        //console.log("starting calculate speed");
-        //console.log("here is Array" + speedAveragerArray);
-        //console.log("array.lngt is " + speedAveragerArray.length);
+    
         for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
-            //console.log("array.length is " + speedAveragerArray.length);
-            //console.log(i > (speedAveragerArray.length - 6));
             if (i > (speedAveragerArray.length - 6)){
-
                 speedSumm5 += Number(speedAveragerArray[i][0]);
                 countSpeed5Watches++;
-                //console.log("speedsum5 is " + speedSumm5);
-                //console.log("countSpeed5Watches is " + countSpeed5Watches);
             }
             if ((currentTime.getTime() - speedAveragerArray[i][2])<60000){
                 speedSumm10m += Number(speedAveragerArray[i][0]);
                 count10mWathches++;
-                //console.log("speedSum10m is " + speedSumm10m);
-                //console.log("count10Watches is " + count10mWathches);
             }
-            //console.log(speedSumm5,countSpeed5Watches,speedSumm10m,count10mWathches);
-            /*if (i > averagerArray.length - 6){
-                speedSumm5 += averagerArray[i][0];
-                if ((averagerArray[i][1] - headingSumm5) < 180) {
-                    headingSumm5 += averagerArray[i][1];
-                }
-                else {
-                    headingSumm5 += averagerArray[i][1] - 360;
-                }
-                count5Watches++;
-            }
-
-            
-            if ((currentTime.getTime() - averagerArray[i][2])<600000){
-                speedSumm1h += averagerArray[i][0];
-                count1hWatches++;
-            } */
         }
         speedAverage5 = speedSumm5 / countSpeed5Watches;
-        //let headingAverage5 = headingAverage;
         speedAverage10m = speedSumm10m / count10mWathches;
-        //speedAverage1h = speedSumm1h / count1hWatches;
-        //console.log(speedAverage5,speedAverage10m)
         return [speedAverage5, speedAverage10m];
     }
 
     function calculateHeadingAverage(){
         if (headingAveragerArray.length == 0) return null;
-        //let headingSumm = 0;
         let headingResultCount = 0;
-        //let headingCos = 0;
-        //let headingSin = 0;
         let headingSummCos = 0;
         let headingSummSin = 0;
         let headingAverageSummCos = 0;
         let headingAverageSummSin = 0;
         let headingAverageRad = 0;
-        //console.log("headingAverageArray.length is " + headingAveragerArray.length)
         for (let i = headingAveragerArray.length - 1; i >= 0 ; i--){
             headingSummCos += Math.cos(degToRad(Number(headingAveragerArray[i])));
             headingSummSin += Math.sin(degToRad(Number(headingAveragerArray[i])));
             headingResultCount++
         }
-        //console.log("headingSummCos: " + headingSummCos);
-        //console.log("headingSummSin: " + headingSummSin);
-        
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
         headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
-        //console.log("headingAverageRad: " + headingAverageRad);
         return radToDeg(headingAverageRad);
     }
 
@@ -148,45 +102,23 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         watcherLatitude = position.coords.latitude;
         watcherLongitude = position.coords.longitude;
         watcherAccuracy = Math.round(Number(position.coords.accuracy));
-
-        //console.log(position.coords.speed, position.coords.heading , position.timestamp)
         if (definedValue(position.coords.speed)){
             speedStack.push(position.coords.speed, position.coords.heading , position.timestamp);
-            //console.log("pushing speed")
         }
         if (definedValue(position.coords.heading)){
             headingStack.push(position.coords.heading);
-            //console.log("pushing heading")
         }
-        //console.log("prepare speed calculating")
         resultSpeed = calculateSpeedAverage();
-        //console.log(result)
         speed5 = resultSpeed[0];
         speed10m = resultSpeed[1];
-        //console.log("prepare heading calculating")
         watcherHeading = calculateHeadingAverage();
-
-
-        //speed1h = result[3];
         let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
-
-        //updateData(instantSpeedObject,position.coords.heading);
-        //updateData(averageSpeedObject, watcherHeading);
-        console.log("writing data to web")
-        updateData(iHeadO, position.coords.heading);
-        updateData(aHeadO, watcherHeading);
-
-        //console.log(position.coords.latitude, position.coords.longitude, position.coords.speed, position.coords.heading, position.coords.accuracy)
-
         fillWatcherData(dataArray);
     }
     function error(){
-
         updateData(accuracyObject,"no GPS available");
-        //calculateDirection([56,90,56,89])
     }
     function rotateRider(angle){
-        console.log(angle);
         lineRider.setAttribute('transform','rotate ('+angle+' 150 150)');
 
     }
@@ -214,9 +146,6 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function getPilot(){
         let pilotId = pilotIdElement.value;
         let timeShift = timeShiftElement.value * 1000;
-        //navigator.vibrate(100);
-        //const wakeLock = await navigator.wakeLock.request("screen");
-        //console.log (wakeLock.status);
         inputButtonElement.classList.add("inputButtonClassPressed");
         
         if (timerPilot){
@@ -247,7 +176,6 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         
         let currentTime = new Date().getTime();
         let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
-        //shiftedDateElement.innerHTML = getShortDate(requestTime);
         updateData(shiftedDateElement, getShortDate(requestTime))
         let data = await getLiveData(pilotId, requestTime);
         let array = data[pilotId];
@@ -275,23 +203,14 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     function fillWatcherData(array){
-
-        //distanceObject.innerHTML = calculateDistance(array);
         if (array[2]!=0 && array[3]!=0 && array[4]!=0){
             updateData(distanceObject, calculateDistance(array));
             let directionToPilot = calculateDirection(array);
-            
             updateData(directionObject,directionToPilot);
             setPointerColor("#4aa8dc");
             rotateRider(directionToPilot);
-
-            //####################################################
-            
-            updateData(dAzimutO,directionToPilot);
-        }   //####################################################
+        }   
         updateData(accuracyObject,array[5]);
-        //updateData(instantSpeedObject,array[4]);
-        
     }
 
     function calculateAverageSpeed60(array){
@@ -306,8 +225,6 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function calculateDistance(array){
         const latitudeDegDist = 111.321377778;
         const longitudeDegDist = 111.134861111;
-        //let watcherLatitude = 56;
-        //let watcherLongitude = 92;
         let latitudeA  = array[0];
         let longitudeA = array[1];
         let latitudeB = array[2];
@@ -322,19 +239,12 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     function calculateDirection(array){
-        //let watcherLatitude = 55;
-        //let watcherLongitude = 93;
-        //let watcherHeading = 300;
-        //all angles in Rad
         let azimut = NaN;
         let externalDirection = array[4];
-
         let latitudeA  = degToRad(array[0]);
         let longitudeA = degToRad(array[1]);
         let latitudeB = degToRad(array[2]);
         let longitudeB = degToRad(array[3]);
-
-
         const deltaLongitude = longitudeB - longitudeA;
         const aLatCos = Math.cos(latitudeA);
         const aLatSin = Math.sin(latitudeA);
@@ -344,26 +254,10 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         const deltaSin = Math.sin(deltaLongitude);
         const x = (aLatCos * bLatSin) - (aLatSin * bLatCos * deltaCos);
         const y = deltaSin * bLatCos;
-        //debugger
         let z = Math.atan2(-y, x);
         z = radToDeg(z); //to degree
-
         updateData(azimutO, z);
-
-        /*if (z > 0){
-            azimut = 360 - z;
-        } else{
-            azimut = -z;
-        }
-        */
-        //debugger;
-        //updateData(averageSpeedObject,azimut);
-        
         let directionToPilot = z - externalDirection;
-        /*if (directionToPilot < 0) {
-            directionToPilot = 360 + directionToPilot;
-        } */
-
         return  -Math.round(directionToPilot);
     }
 
