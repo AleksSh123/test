@@ -200,7 +200,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function calculateAverageSpeed60(array){ 
         let speedSumm = 0;
         let speedEntryCount = 0;
-        if (array.length < 60) speedEntryCount = array.length;
+        if (array.length < 60) {
+            speedEntryCount = array.length;
+        } else {
+            speedEntryCount = 60;
+        }
         for (let i = 0; i < speedEntryCount; i++){
             speedSumm += array[i].v;
         }
