@@ -12,16 +12,14 @@ const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const accuracyObject = document.getElementById("accuracy");
-
 let azimutTest =0;
-
 const options = {
     enableHighAccuracy: true
 }
 const url = "https://lt.flymaster.net/wlb/getLiveData.php";
 let speedAveragerArray = new Array(); //will be [speed,heading,timestamp]
 let headingAveragerArray = new Array(); //will be [heading]
-let speedStack  = {
+let speedStack  = {  //включить массивы стеков в объекты стеков
     push(speed, heading, time){
         speedAveragerArray.push([speed, heading, time]);
         if (speedAveragerArray.length > 3600){
@@ -93,7 +91,6 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         return radToDeg(headingAverageRad);
     }
 
-    
     function success(position){
         let currentTime = new Date();
         let result = new Array();
@@ -118,24 +115,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     function error(){
         updateData(accuracyObject,"no GPS available");
     }
-    function rotateRider(angle){
-        lineRider.setAttribute('transform','rotate ('+angle+' 150 150)');
-
-    }
-    function gpsEmulation(){
-        position.coords.latitude = -1;
-        position.coords.longitude = -1;
-        position.coords.speed = Math.random() + 3;
-        let randomDigit = Math.random()
-        position.coords.heading = randomDigit * 60 - 30;
-        console.log("random: " + randomDigit + ", randomDegree: " + position.coords.heading)
-        if (position.coords.heading < 0){
-            position.coords.heading  = position.coords.heading + 360;
-        }
-        console.log("randomDegree after normalize: " + position.coords.heading)
-        let tt = new Date();
-        position.timestamp = tt.getTime();
-    }
+ 
     async function  getLiveData(sn,timeStamp){
         urlLocal = url + "?trackers={\"" + String(sn) + "\":" + String(timeStamp) + "}";
         let response = await fetch(urlLocal);
@@ -156,7 +136,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
     }
 
-    async function fillPilotData(pilotId, timeShift){
+    async function fillPilotData(pilotId, timeShift){ //добавить обработку отсутствия данных
         let pilotData = await getPilotData(pilotId, timeShift);
         if (pilotData){
             updateData(altitudeObject, pilotData[3]);
@@ -198,8 +178,6 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         } else {
             return false;
         }
-        
-
     }
 
     function fillWatcherData(array){
@@ -213,7 +191,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         updateData(accuracyObject,array[5]);
     }
 
-    function calculateAverageSpeed60(array){
+    function calculateAverageSpeed60(array){ //добавить проверку длинны массива данных пилота
         let speedSumm = 0;
         for (let i = 0; i < 60; i++){
             speedSumm += array[i].v;
@@ -261,8 +239,8 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         return  -Math.round(directionToPilot);
     }
 
-    function getCurrentCoords(){
-        
+    function getDevOrientationHeading(){
+                
     }
 
     function getShortDate(time){
@@ -323,3 +301,23 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             return true;
         }
     }
+
+    function rotateRider(angle){
+        lineRider.setAttribute('transform','rotate ('+angle+' 150 150)');
+
+    }
+    /*
+    function gpsEmulation(){
+        position.coords.latitude = -1;
+        position.coords.longitude = -1;
+        position.coords.speed = Math.random() + 3;
+        let randomDigit = Math.random()
+        position.coords.heading = randomDigit * 60 - 30;
+        console.log("random: " + randomDigit + ", randomDegree: " + position.coords.heading)
+        if (position.coords.heading < 0){
+            position.coords.heading  = position.coords.heading + 360;
+        }
+        console.log("randomDegree after normalize: " + position.coords.heading)
+        let tt = new Date();
+        position.timestamp = tt.getTime();
+    } */
