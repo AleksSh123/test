@@ -17,21 +17,22 @@ const options = {
     enableHighAccuracy: true
 }
 const url = "https://lt.flymaster.net/wlb/getLiveData.php";
-let speedAveragerArray = new Array(); //will be [speed,heading,timestamp]
-let headingAveragerArray = new Array(); //will be [heading]
-let speedStack  = {  //включить массивы стеков в объекты стеков
+
+let speedStack  = {  
+    array: new Array(), //will be [speed,heading,timestamp]
     push(speed, heading, time){
-        speedAveragerArray.push([speed, heading, time]);
-        if (speedAveragerArray.length > 3600){
-            speedAveragerArray.shift();
+        this.array.push([speed, heading, time]);
+        if (this.array.length > 3600){
+            this.array.shift();
         }
     }
 }
 let headingStack = {
+    array: new Array(), //will be [heading]
     push(heading){
-        headingAveragerArray.push([heading]);
-        if (headingAveragerArray.length > 5){
-            headingAveragerArray.shift();
+        this.array.push([heading]);
+        if (this.array.length > 5){
+            this.array.shift();
         }
     }   
 }
@@ -50,20 +51,20 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
 
     function calculateSpeedAverage(){
-        if (speedAveragerArray.length == 0) return [null,null];
+        if (speedStack.array.length == 0) return [null,null];
         let speedSumm5 = 0;
         let speedSumm10m = 0;
         let currentTime = new Date();
         let countSpeed5Watches = 0;
         let count10mWathches = 0;
     
-        for (let i = speedAveragerArray.length - 1; i >= 0 ; i--){
-            if (i > (speedAveragerArray.length - 6)){
-                speedSumm5 += Number(speedAveragerArray[i][0]);
+        for (let i = speedStack.array.length - 1; i >= 0 ; i--){
+            if (i > (speedStack.array.length - 6)){
+                speedSumm5 += Number(speedStack.array[i][0]);
                 countSpeed5Watches++;
             }
-            if ((currentTime.getTime() - speedAveragerArray[i][2])<60000){
-                speedSumm10m += Number(speedAveragerArray[i][0]);
+            if ((currentTime.getTime() - speedStack.array[i][2])<60000){
+                speedSumm10m += Number(speedStack.array[i][0]);
                 count10mWathches++;
             }
         }
@@ -73,16 +74,16 @@ let position = navigator.geolocation.watchPosition(success,error,options);
     }
 
     function calculateHeadingAverage(){
-        if (headingAveragerArray.length == 0) return null;
+        if (headingStack.array.length == 0) return null;
         let headingResultCount = 0;
         let headingSummCos = 0;
         let headingSummSin = 0;
         let headingAverageSummCos = 0;
         let headingAverageSummSin = 0;
         let headingAverageRad = 0;
-        for (let i = headingAveragerArray.length - 1; i >= 0 ; i--){
-            headingSummCos += Math.cos(degToRad(Number(headingAveragerArray[i])));
-            headingSummSin += Math.sin(degToRad(Number(headingAveragerArray[i])));
+        for (let i = headingStack.array.length - 1; i >= 0 ; i--){
+            headingSummCos += Math.cos(degToRad(Number(headingStack.array[i])));
+            headingSummSin += Math.sin(degToRad(Number(headingStack.array[i])));
             headingResultCount++
         }
         headingAverageSummCos = headingSummCos / headingResultCount;
@@ -136,8 +137,9 @@ let position = navigator.geolocation.watchPosition(success,error,options);
 
     }
 
-    async function fillPilotData(pilotId, timeShift){ //добавить обработку отсутствия данных
+    async function fillPilotData(pilotId, timeShift){ 
         let pilotData = await getPilotData(pilotId, timeShift);
+        let noDataMessage = "no data";
         if (pilotData){
             updateData(altitudeObject, pilotData[3]);
             updateData(groundHeightObject, pilotData[8]);
@@ -147,7 +149,11 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             pilotLatitude = pilotData[1];
             pilotLongitude = pilotData[2];
         } else{
-            //noData(true);
+            updateData(altitudeObject, noDataMessage);
+            updateData(groundHeightObject, noDataMessage);
+            updateData(instantSpeedObject, noDataMessage);
+            updateData(averageSpeedObject, noDataMessage)
+            updateData(actualDateElement,noDataMessage);
         }
     }
 
@@ -191,12 +197,14 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         updateData(accuracyObject,array[5]);
     }
 
-    function calculateAverageSpeed60(array){ //добавить проверку длинны массива данных пилота
+    function calculateAverageSpeed60(array){ 
         let speedSumm = 0;
-        for (let i = 0; i < 60; i++){
+        let speedEntryCount = 0;
+        if (array.length < 60) speedEntryCount = array.length;
+        for (let i = 0; i < speedEntryCount; i++){
             speedSumm += array[i].v;
         }
-        let averageSpeed = speedSumm / 60;
+        let averageSpeed = speedSumm / speedEntryCount;
         return Math.round(averageSpeed,1);
     }
 
