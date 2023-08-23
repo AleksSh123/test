@@ -252,7 +252,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         const y = deltaSin * bLatCos;
         let z = Math.atan2(-y, x);
         z = radToDeg(z); //to degree
-        updateData(azimutO, z);
+
         let directionToPilot = z - externalDirection;
         return  -Math.round(directionToPilot);
     }
