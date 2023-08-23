@@ -100,17 +100,23 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         watcherLatitude = position.coords.latitude;
         watcherLongitude = position.coords.longitude;
         watcherAccuracy = Math.round(Number(position.coords.accuracy));
+        console.log("1");
         if (definedValue(position.coords.speed)){
             speedStack.push(position.coords.speed, position.coords.heading , position.timestamp);
         }
+        console.log("2");
         if (definedValue(position.coords.heading)){
             headingStack.push(position.coords.heading);
         }
+        console.log("3");
         resultSpeed = calculateSpeedAverage();
+        console.log("4");
         speed5 = resultSpeed[0];
         speed10m = resultSpeed[1];
         watcherHeading = calculateHeadingAverage();
+        console.log("5");
         let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
+        
         fillWatcherData(dataArray);
     }
     function error(){
