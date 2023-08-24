@@ -277,7 +277,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
 
     function getDirectionsDelta(angle1, angle2){
-        let result = Math.round(angle1 - angle2);
+        let result = Math.round(angle2 - angle1);
         return result;
     }
 
