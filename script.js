@@ -12,7 +12,7 @@ const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const accuracyObject = document.getElementById("accuracy");
-let azimutTest =0;
+//let azimutTest =0;
 const options = {
     enableHighAccuracy: true
 }
@@ -37,109 +37,67 @@ let headingStack = {
     }   
 }
 
-let watcherLatitude = 0;
-let watcherLongitude = 0;
-let watcherHeading = 0;
-let watcherAccuracy = 0;
-let pilotLatitude = 0;
-let pilotLongitude = 0;
-let timerPilot = 0;
+let pilot = {
+    latitude: null,
+    longitude: null,
+    velocity: null,
+    baroAltitude: null,
+    gpsAltitude: null,
+    groundHeight: null,
+    bearing: null,
+    timestamp: null,
+    averageVelocity60: null
+}
+
+let watcher = {
+    latitude: null,
+    longitude: null,
+    gpsHeading: null,
+    accuracy: null,
+    devOrientationHeading: null
+}
+
+let timerPilotUpdate = 0;
 
 setPointerColor("red");
 
-let position = navigator.geolocation.watchPosition(success,error,options);
+let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,options);
 
-
-    function calculateSpeedAverage(){
-        if (speedStack.array.length == 0) return [null,null];
-        let speedSumm5 = 0;
-        let speedSumm10m = 0;
-        let currentTime = new Date();
-        let countSpeed5Watches = 0;
-        let count10mWathches = 0;
-    
-        for (let i = speedStack.array.length - 1; i >= 0 ; i--){
-            if (i > (speedStack.array.length - 6)){
-                speedSumm5 += Number(speedStack.array[i][0]);
-                countSpeed5Watches++;
-            }
-            if ((currentTime.getTime() - speedStack.array[i][2])<60000){
-                speedSumm10m += Number(speedStack.array[i][0]);
-                count10mWathches++;
-            }
-        }
-        speedAverage5 = speedSumm5 / countSpeed5Watches;
-        speedAverage10m = speedSumm10m / count10mWathches;
-        return [speedAverage5, speedAverage10m];
-    }
-
-    function calculateHeadingAverage(){
-        if (headingStack.array.length == 0) return null;
-        let headingResultCount = 0;
-        let headingSummCos = 0;
-        let headingSummSin = 0;
-        let headingAverageSummCos = 0;
-        let headingAverageSummSin = 0;
-        let headingAverageRad = 0;
-        for (let i = headingStack.array.length - 1; i >= 0 ; i--){
-            headingSummCos += Math.cos(degToRad(Number(headingStack.array[i])));
-            headingSummSin += Math.sin(degToRad(Number(headingStack.array[i])));
-            headingResultCount++
-        }
-        headingAverageSummCos = headingSummCos / headingResultCount;
-        headingAverageSummSin = headingSummSin / headingResultCount;
-        headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
-        return radToDeg(headingAverageRad);
-    }
-
-    function success(position){
-        let currentTime = new Date();
-        let result = new Array();
+    function successGetGPS(position){
         let resultSpeed = [];
-
-        watcherLatitude = position.coords.latitude;
-        watcherLongitude = position.coords.longitude;
-        watcherAccuracy = Math.round(Number(position.coords.accuracy));
-        console.log("1");
-        if (definedValue(position.coords.speed)){
+        watcher.latitude = position.coords.latitude;
+        watcher.longitude = position.coords.longitude;
+        watcher.accuracy = Math.round(Number(position.coords.accuracy));
+        if (isDefinedValue(position.coords.speed)){
             speedStack.push(position.coords.speed, position.coords.heading , position.timestamp);
         }
-        console.log("2");
-        if (definedValue(position.coords.heading)){
+        if (isDefinedValue(position.coords.heading)){
             headingStack.push(position.coords.heading);
         }
-        console.log("3");
         resultSpeed = calculateSpeedAverage();
-        console.log("4");
         speed5 = resultSpeed[0];
         speed10m = resultSpeed[1];
-        watcherHeading = calculateHeadingAverage();
-        console.log("5");
-        let dataArray = [watcherLatitude, watcherLongitude, pilotLatitude, pilotLongitude, watcherHeading, watcherAccuracy];
+        watcher.gpsHeading = calculateHeadingAverage();
+        let dataArray = [watcher.latitude, watcher.longitude, pilot.latitude, pilot.longitude, watcher.gpsHeading, watcher.accuracy];
         
         fillWatcherData(dataArray);
     }
-    function error(){
+    function errorGetGPS(){
         updateData(accuracyObject,"no GPS available");
     }
  
-    async function  getLiveData(sn,timeStamp){
-        urlLocal = url + "?trackers={\"" + String(sn) + "\":" + String(timeStamp) + "}";
-        let response = await fetch(urlLocal);
-        let liveData = await response.json();
-        return liveData;
-    }
+ 
 
-    function getPilot(){
+    function inputPilot(){
         let pilotId = pilotIdElement.value;
         let timeShift = timeShiftElement.value * 1000;
         inputButtonElement.classList.add("inputButtonClassPressed");
         
-        if (timerPilot){
-            clearInterval(timerPilot);
+        if (timerPilotUpdate){
+            clearInterval(timerPilotUpdate);
         }   
         fillPilotData(pilotId,timeShift);
-        timerPilot = setInterval(fillPilotData,5000,pilotId,timeShift);
+        timerPilotUpdate = setInterval(fillPilotData,5000,pilotId,timeShift);
 
     }
 
@@ -151,9 +109,9 @@ let position = navigator.geolocation.watchPosition(success,error,options);
             updateData(groundHeightObject, pilotData[8]);
             updateData(instantSpeedObject, pilotData[5]);
             updateData(averageSpeedObject, pilotData[6])
-            updateData(actualDateElement,getShortDate(pilotData[0]));
-            pilotLatitude = pilotData[1];
-            pilotLongitude = pilotData[2];
+            updateData(actualDateElement,convertToShortDate(pilotData[0]));
+            pilot.latitude = pilotData[1];
+            pilot.longitude = pilotData[2];
         } else{
             updateData(altitudeObject, noDataMessage);
             updateData(groundHeightObject, noDataMessage);
@@ -168,28 +126,35 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         
         let currentTime = new Date().getTime();
         let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
-        updateData(shiftedDateElement, getShortDate(requestTime))
+        updateData(shiftedDateElement, convertToShortDate(requestTime))
         let data = await getLiveData(pilotId, requestTime);
         let array = data[pilotId];
         if (array){
             
             array.reverse();
-            let pilotBarometricAltitude = array[0].c;
-            let pilotGpsAltitude = array[0].h;
-            let pilotVelocity = array[0].v;
-            let groundHeight = array[0].s;
-            let pilotBearing = array[0].b;
-            let pilotTimestamp = array[0].d;
-            let pilotLatitude = array[0].ai / 60000;
-            let pilotLongitude = array[0].oi / 60000;
-            let pilotAverageVelocity60 = calculateAverageSpeed60(array);
-            let result = [pilotTimestamp, pilotLatitude, pilotLongitude, pilotBarometricAltitude,
-                 pilotGpsAltitude, pilotVelocity, pilotAverageVelocity60, pilotBearing, groundHeight]
+            pilot.baroAltitude = array[0].c;
+            pilot.gpsAltitude = array[0].h;
+            pilot.velocity = array[0].v;
+            pilot.groundHeight = array[0].s;
+            pilot.bearing = array[0].b;
+            pilot.timestamp = array[0].d;
+            pilot.latitude = array[0].ai / 60000;
+            pilot.longitude = array[0].oi / 60000;
+            pilot.averageVelocity60 = calculateAverageSpeed60(array);
+            let result = [pilot.timestamp, pilot.latitude, pilot.longitude, pilot.baroAltitude,
+                 pilot.gpsAltitude, pilot.velocity, pilot.averageVelocity60, pilot.bearing, pilot.groundHeight]
 
             return result;
         } else {
             return false;
         }
+    }
+
+    async function  getLiveData(sn,timeStamp){
+        urlLocal = url + "?trackers={\"" + String(sn) + "\":" + String(timeStamp) + "}";
+        let response = await fetch(urlLocal);
+        let liveData = await response.json();
+        return liveData;
     }
 
     function fillWatcherData(array){
@@ -257,11 +222,54 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         return  -Math.round(directionToPilot);
     }
 
+    function calculateSpeedAverage(){
+        if (speedStack.array.length == 0) return [null,null];
+        let speedSumm5 = 0;
+        let speedSumm10m = 0;
+        let currentTime = new Date();
+        let countSpeed5Watches = 0;
+        let count10mWathches = 0;
+    
+        for (let i = speedStack.array.length - 1; i >= 0 ; i--){
+            if (i > (speedStack.array.length - 6)){
+                speedSumm5 += Number(speedStack.array[i][0]);
+                countSpeed5Watches++;
+            }
+            if ((currentTime.getTime() - speedStack.array[i][2])<60000){
+                speedSumm10m += Number(speedStack.array[i][0]);
+                count10mWathches++;
+            }
+        }
+        speedAverage5 = speedSumm5 / countSpeed5Watches;
+        speedAverage10m = speedSumm10m / count10mWathches;
+        return [speedAverage5, speedAverage10m];
+    }
+
+    function calculateHeadingAverage(){
+        if (headingStack.array.length == 0) return null;
+        let headingResultCount = 0;
+        let headingSummCos = 0;
+        let headingSummSin = 0;
+        let headingAverageSummCos = 0;
+        let headingAverageSummSin = 0;
+        let headingAverageRad = 0;
+        for (let i = headingStack.array.length - 1; i >= 0 ; i--){
+            headingSummCos += Math.cos(degToRad(Number(headingStack.array[i])));
+            headingSummSin += Math.sin(degToRad(Number(headingStack.array[i])));
+            headingResultCount++
+        }
+        headingAverageSummCos = headingSummCos / headingResultCount;
+        headingAverageSummSin = headingSummSin / headingResultCount;
+        headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
+        return radToDeg(headingAverageRad);
+    }
+
+
     function getDevOrientationHeading(){
                 
     }
 
-    function getShortDate(time){
+    function convertToShortDate(time){
         let longTime =  new Date(time * 1000);
         let date = longTime.getDate();
         let month = longTime.getMonth();
@@ -312,7 +320,7 @@ let position = navigator.geolocation.watchPosition(success,error,options);
         circleObject.setAttribute("stroke",color);
     }
 
-    function definedValue(value){
+    function isDefinedValue(value){
         if ((value === null ) || (Number.isNaN(value))){
             return false;
         } else{
