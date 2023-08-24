@@ -190,10 +190,15 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         updateData(distanceObject, calculateDistance(array));
         let pilotAzimut = calculateWatcherToPilotAzimut(array);
         let watcherHeading = array[4];
-        let directionToPilot = getDirectionsDelta(pilotAzimut, watcherHeading);
-        updateData(directionObject,directionToPilot);
-        setPointerColor("#4aa8dc");
-        rotateRider(directionToPilot);
+        if (watcherHeading != null){
+            let directionToPilot = getDirectionsDelta(pilotAzimut, watcherHeading);
+            updateData(directionObject,directionToPilot);
+            setPointerColor("#4aa8dc");
+            rotateRider(directionToPilot);
+        } else {
+            updateData(directionObject,"---");
+        }
+     
     }
 
     function calculateAverageSpeed60(array){ 
@@ -273,6 +278,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
 
     function getDirectionsDelta(angle1, angle2){
         let result = Math.round(angle1 - angle2);
+        return result;
     }
 
     function calculateSpeedAverage(){
