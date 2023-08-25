@@ -136,6 +136,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(instantSpeedObject, noDataMessage);
             updateData(averageSpeedObject, noDataMessage)
             updateData(actualDateElement,noDataMessage);
+            updateData(distanceObject,noDataMessage);
         }
     }
 
