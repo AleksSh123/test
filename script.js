@@ -49,7 +49,10 @@ let pilot = {
     averageVelocity60: null,
     clearData(){
         for (let key in this){
-            this[key] = null;
+            if (key != "clearData"){
+                this[key] = null;
+            }
+            
         }
        
     }
