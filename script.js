@@ -47,7 +47,7 @@ let pilot = {
     bearing: null,
     timestamp: null,
     averageVelocity60: null,
-    clearData: function(){
+    clearData(){
         for (key in this){
             this[key] = null;
         }
