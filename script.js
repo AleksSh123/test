@@ -48,9 +48,10 @@ let pilot = {
     timestamp: null,
     averageVelocity60: null,
     clearData(){
-        for (key in this){
+        for (let key in this){
             this[key] = null;
         }
+       
     }
 }
 
