@@ -49,6 +49,8 @@ let pilot = {
     timestamp: null,
     averageVelocity60: null,
     receivedData: false,
+    id: null,
+    timeShift: null,
     clearData(){
         for (let key in this){
             if (key != "clearData"){
@@ -70,7 +72,8 @@ let watcher = {
     gpsHeading: null,
     accuracy: null,
     devOrientationHeading: null,
-    requestTime: null
+    requestTime: null,
+    noGps: null
 }
 
 let calculations = {
@@ -85,7 +88,8 @@ setPointerColor("red");
 let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,options);
 
     function successGetGPS(position){
-        let resultSpeed = [];
+        //let resultSpeed = [];
+        watcher.noGps = false;
         watcher.latitude = position.coords.latitude;
         watcher.longitude = position.coords.longitude;
         watcher.accuracy = Math.round(Number(position.coords.accuracy));
@@ -101,37 +105,88 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         speed10m = resultSpeed[1];
         */
         calculateHeadingAverage();
+        /*
         fillWatcherData();
         if (pilot.receivedData){
             fillCalculatedData();
         }
+        */
+        updateView();
     }
     function errorGetGPS(){
-        watcher.latitude = null;
-        watcher.longitude = null;
-        watcher.accuracy = null;
+        //watcher.latitude = null;
+        //watcher.longitude = null;
+        //watcher.accuracy = null;
         watcher.gpsHeading = null;
-        fillWatcherData("no GPS available");
+        watcher.noGps = true;
+        //fillWatcherData("no GPS available");
+        updateView();
     }
  
+    function updateView(){
+        
+        updateData(shiftedDateElement, watcher.requestTime);
+        if (!watcher.noGps){
+            updateData(accuracyObject,watcher.accuracy);
+        } else{
+            updateData(accuracyObject,"no GPS available");
+        }
+        if (pilot.receivedData){
+            updateData(altitudeObject, pilot.baroAltitude);
+            updateData(groundHeightObject, pilot.groundHeight);
+            updateData(instantSpeedObject, pilot.velocity);
+            updateData(averageSpeedObject, pilot.averageVelocity60)
+            updateData(actualDateElement,convertToShortDate(pilot.timestamp))
+        } else {
+            updateData(altitudeObject, null);
+            updateData(groundHeightObject, null);
+            updateData(instantSpeedObject, null);
+            updateData(averageSpeedObject, null)
+            updateData(actualDateElement,null)
+        }
+        if ((!watcher.noGps) && (pilot.receivedData)){
+            calculateDistance();
+            calculateWatcherToPilotAzimut();
+            updateData(distanceObject, pilot.distance);
+            if (watcher.gpsHeading != null){
+                calculateDirectionsToPilot();
+                updateData(directionObject, calculations.directionToPilotGps);
+                rotateRider(calculations.directionToPilotGps);
+                setPointerColor("#4aa8dc");
+            } else{
+                updateData(directionObject, null);
+                rotateRider(0);
+                setPointerColor("red");
+            }
+
+
+
+        }
  
 
+    }
+
+
+
     function inputPilot(){
-        let pilotId = pilotIdElement.value;
-        let timeShift = timeShiftElement.value * 1000;
+        pilot.id = pilotIdElement.value;
+        pilot.timeShift = timeShiftElement.value * 1000;
         inputButtonElement.classList.add("inputButtonClassPressed");
         
         if (timerPilotUpdate){
             clearInterval(timerPilotUpdate);
         }
         pilot.clearData();
-        fillPilotData(pilotId,timeShift);
-        timerPilotUpdate = setInterval(fillPilotData,5000,pilotId,timeShift);
+        
+        fillPilotData();
+        timerPilotUpdate = setInterval(fillPilotData,5000);
 
     }
 
-    async function fillPilotData(pilotId, timeShift){ 
-        let pilotData = await getPilotData(pilotId, timeShift);
+    async function fillPilotData(){ 
+        let pilotData = await getPilotData(pilot.id, pilot.timeShift);
+        updateView();
+        /*
         let noDataMessage = "no data";
         if (pilotData){
             updateData(altitudeObject, pilot.baroAltitude);
@@ -148,6 +203,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(actualDateElement,noDataMessage);
             updateData(distanceObject,noDataMessage);
         }
+        */
     }
 
     async function getPilotData(pilotId, timeShift){
@@ -409,6 +465,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         element.classList.remove("noDataClass");
         }
     }
+
 
     function degToRad(angle){
         return angle * Math.PI / 180;
