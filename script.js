@@ -145,7 +145,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if ((!watcher.noGps) && (pilot.receivedData)){
             calculateDistance();
             calculateWatcherToPilotAzimut();
-            updateData(distanceObject, pilot.distance);
+            updateData(distanceObject, calculations.distance);
             if (watcher.gpsHeading != null){
                 calculateDirectionsToPilot();
                 updateData(directionObject, calculations.directionToPilotGps);
@@ -374,8 +374,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
 
     function calculateDirectionsToPilot(){
-        calculations.directionToPilotGps = Math.round(pilot.heading - watcher.gpsHeading);
-        calculations.directionToPilotOri = Math.round(pilot.heading - watcher.devOrientationHeading);
+        calculations.directionToPilotGps = Math.round(calculations.watcherToPilotAzumit - watcher.gpsHeading);
+        calculations.directionToPilotOri = Math.round(calculations.watcherToPilotAzumit - watcher.devOrientationHeading);
     }
 
     function calculateSpeedAverage(){
