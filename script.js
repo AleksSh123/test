@@ -139,8 +139,10 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(altitudeObject, null);
             updateData(groundHeightObject, null);
             updateData(instantSpeedObject, null);
-            updateData(averageSpeedObject, null)
-            updateData(actualDateElement,null)
+            updateData(averageSpeedObject, null);
+            updateData(actualDateElement,null);
+            updateData(distanceObject, null);
+            setNoDirection();
         }
         if ((!watcher.noGps) && (pilot.receivedData)){
             calculateDistance();
@@ -152,9 +154,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                 rotateRider(calculations.directionToPilotGps);
                 setPointerColor("#4aa8dc");
             } else{
-                updateData(directionObject, null);
-                rotateRider(0);
-                setPointerColor("red");
+                setNoDirection();
             }
 
 
@@ -243,8 +243,9 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         return liveData;
     }
 
+    /*
     function fillWatcherData(){
-        /*
+        
         if (array[2]!=0 && array[3]!=0 && array[4]!=0){
             updateData(distanceObject, calculateDistance(array));
             let directionToPilot = calculateDirection(array);
@@ -252,11 +253,13 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             setPointerColor("#4aa8dc");
             rotateRider(directionToPilot);
         } 
-        */  
+       
         updateData(accuracyObject,watcher.accuracy);
         updateData(shiftedDateElement, watcher.requestTime);
     }
+        */
 
+        /*
     function fillCalculatedData(){
         //0,1 -watcher coords, 2,3 - pilot coords, 4,5 - watcher gps and devOri heading
         calculateDistance();
@@ -277,8 +280,9 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         } else {
             updateData(directionObject,"---");
         }
-        */
+      
     }
+      */
 
     function calculateAverageSpeed60(array){ 
         let speedSumm = 0;
@@ -378,6 +382,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         calculations.directionToPilotOri = Math.round(calculations.watcherToPilotAzumit - watcher.devOrientationHeading);
     }
 
+    /*
     function calculateSpeedAverage(){
         if (speedStack.array.length == 0) return [null,null];
         let speedSumm5 = 0;
@@ -400,6 +405,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         speedAverage10m = speedSumm10m / count10mWathches;
         return [speedAverage5, speedAverage10m];
     }
+    */
 
     function calculateHeadingAverage(){
         if (headingStack.array.length == 0) {
@@ -464,6 +470,11 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         }
     }
 
+    function setNoDirection(){
+        updateData(directionObject, null);
+        rotateRider(0);
+        setPointerColor("red");
+    }
 
     function degToRad(angle){
         return angle * Math.PI / 180;
