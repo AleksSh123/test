@@ -12,6 +12,7 @@ const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const accuracyObject = document.getElementById("accuracy");
+let timerPilotUpdate = 0;
 //let azimutTest =0;
 const options = {
     enableHighAccuracy: true
@@ -47,10 +48,15 @@ let pilot = {
     bearing: null,
     timestamp: null,
     averageVelocity60: null,
+    receivedData: false,
     clearData(){
         for (let key in this){
             if (key != "clearData"){
-                this[key] = null;
+                if (key == "receivedData"){
+                    this[key] = false;
+                } else {
+                    this[key] = null;
+                }
             }
             
         }
@@ -63,10 +69,16 @@ let watcher = {
     longitude: null,
     gpsHeading: null,
     accuracy: null,
-    devOrientationHeading: null
+    devOrientationHeading: null,
+    requestTime: null
 }
 
-let timerPilotUpdate = 0;
+let calculations = {
+    distance: null,
+    watcherToPilotAzumit: null,
+    directionToPilotGps: null,
+    directionToPilotOri: null
+}
 
 setPointerColor("red");
 
@@ -83,16 +95,15 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if (isDefinedValue(position.coords.heading)){
             headingStack.push(position.coords.heading);
         }
+        /*
         resultSpeed = calculateSpeedAverage();
         speed5 = resultSpeed[0];
         speed10m = resultSpeed[1];
-        watcher.gpsHeading = calculateHeadingAverage();
-        
-        
-        fillWatcherData(watcher.accuracy);
-        if ((pilot.latitude != null) && (pilot.longitude != null)){
-            let dataArray = [watcher.latitude, watcher.longitude, pilot.latitude, pilot.longitude, watcher.gpsHeading, watcher.devOrientationHeading];
-            fillCalculatedData(dataArray);
+        */
+        calculateHeadingAverage();
+        fillWatcherData();
+        if (pilot.receivedData){
+            fillCalculatedData();
         }
     }
     function errorGetGPS(){
@@ -123,15 +134,14 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         let pilotData = await getPilotData(pilotId, timeShift);
         let noDataMessage = "no data";
         if (pilotData){
-            updateData(altitudeObject, pilotData[3]);
-            updateData(groundHeightObject, pilotData[8]);
-            updateData(instantSpeedObject, pilotData[5]);
-            updateData(averageSpeedObject, pilotData[6])
-            updateData(actualDateElement,convertToShortDate(pilotData[0]));
-            pilot.latitude = pilotData[1];
-            pilot.longitude = pilotData[2];
+            updateData(altitudeObject, pilot.baroAltitude);
+            updateData(groundHeightObject, pilot.groundHeight);
+            updateData(instantSpeedObject, pilot.velocity);
+            updateData(averageSpeedObject, pilot.averageVelocity60)
+            updateData(actualDateElement,convertToShortDate(pilot.timestamp));
+
         } else{
-            updateData(altitudeObject, noDataMessage);
+            updateData(altitudeObject, noDataMessage); //переделать на сохранение последних полученных данных в течении суток
             updateData(groundHeightObject, noDataMessage);
             updateData(instantSpeedObject, noDataMessage);
             updateData(averageSpeedObject, noDataMessage)
@@ -145,7 +155,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         
         let currentTime = new Date().getTime();
         let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
-        updateData(shiftedDateElement, convertToShortDate(requestTime))
+        watcher.requestTime = convertToShortDate(requestTime);
+        
         let data = await getLiveData(pilotId, requestTime);
         let array = data[pilotId];
         if (array){
@@ -160,12 +171,13 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             pilot.latitude = array[0].ai / 60000;
             pilot.longitude = array[0].oi / 60000;
             pilot.averageVelocity60 = calculateAverageSpeed60(array);
+            pilot.receivedData = true;
             let result = [pilot.timestamp, pilot.latitude, pilot.longitude, pilot.baroAltitude,
                  pilot.gpsAltitude, pilot.velocity, pilot.averageVelocity60, pilot.bearing, pilot.groundHeight]
 
             return result;
         } else {
-            pilot.clearData();
+            pilot.receivedData = false;
             return false;
         }
     }
@@ -177,7 +189,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         return liveData;
     }
 
-    function fillWatcherData(value){
+    function fillWatcherData(){
         /*
         if (array[2]!=0 && array[3]!=0 && array[4]!=0){
             updateData(distanceObject, calculateDistance(array));
@@ -187,12 +199,20 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             rotateRider(directionToPilot);
         } 
         */  
-        updateData(accuracyObject,value);
+        updateData(accuracyObject,watcher.accuracy);
+        updateData(shiftedDateElement, watcher.requestTime);
     }
 
-    function fillCalculatedData(array){
+    function fillCalculatedData(){
         //0,1 -watcher coords, 2,3 - pilot coords, 4,5 - watcher gps and devOri heading
-        updateData(distanceObject, calculateDistance(array));
+        calculateDistance();
+        calculateWatcherToPilotAzimut();
+        calculateDirectionsToPilot();
+        updateData(distanceObject, pilot.distance);
+        updateData(directionObject, calculations.directionToPilotGps);
+        rotateRider(calculations.directionToPilotGps);
+        setPointerColor("#4aa8dc");
+        /*
         let pilotAzimut = calculateWatcherToPilotAzimut(array);
         let watcherHeading = array[4];
         if (watcherHeading != null){
@@ -203,7 +223,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         } else {
             updateData(directionObject,"---");
         }
-     
+        */
     }
 
     function calculateAverageSpeed60(array){ 
@@ -221,22 +241,29 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         return Math.round(averageSpeed,1);
     }
 
-    function calculateDistance(array){
+    function calculateDistance(){
         const latitudeDegDist = 111.321377778;
         const longitudeDegDist = 111.134861111;
+        /*
         let latitudeA  = array[0];
         let longitudeA = array[1];
         let latitudeB = array[2];
         let longitudeB = array[3];
+        */
+        let latitudeA  = watcher.latitude;
+        let longitudeA = watcher.longitude;
+        let latitudeB = pilot.latitude;
+        let longitudeB = pilot.longitude;
         let deltaLatitude = latitudeB - latitudeA;
         let deltaLongitude = longitudeB - longitudeA;
         let distanceLatitudeKm = deltaLatitude * latitudeDegDist * Math.cos(latitudeA);
         let distanceLongitudeKm = deltaLongitude * longitudeDegDist;
         let distance = Math.hypot(distanceLatitudeKm, distanceLongitudeKm);
         let result = distance.toFixed(3);
+        calculations.distance = result;
         return result;
     }
-
+    /*
     function calculateDirection(array){
         let azimut = NaN;
         let externalDirection = array[4];
@@ -259,14 +286,19 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         let directionToPilot = z - externalDirection;
         return  -Math.round(directionToPilot);
     }
-
-    function calculateWatcherToPilotAzimut(array){
-        let azimut = NaN;
-        let externalDirection = array[4];
+    */
+    function calculateWatcherToPilotAzimut(){
+        /*
         let latitudeA  = degToRad(array[0]);
         let longitudeA = degToRad(array[1]);
         let latitudeB = degToRad(array[2]);
         let longitudeB = degToRad(array[3]);
+        */
+        let latitudeA  = watcher.latitude;
+        let longitudeA = watcher.longitude;
+        let latitudeB = pilot.latitude;
+        let longitudeB = pilot.longitude;
+
         const deltaLongitude = longitudeB - longitudeA;
         const aLatCos = Math.cos(latitudeA);
         const aLatSin = Math.sin(latitudeA);
@@ -278,12 +310,18 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         const y = deltaSin * bLatCos;
         let z = Math.atan2(-y, x);
         let result = radToDeg(z); //to degree
+        calculations.watcherToPilotAzumit = result;
         return result;
     }
 
     function getDirectionsDelta(angle1, angle2){
         let result = Math.round(angle2 - angle1);
         return result;
+    }
+
+    function calculateDirectionsToPilot(){
+        calculations.directionToPilotGps = Math.round(pilot.heading - watcher.gpsHeading);
+        calculations.directionToPilotOri = Math.round(pilot.heading - watcher.devOrientationHeading);
     }
 
     function calculateSpeedAverage(){
@@ -310,7 +348,10 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
 
     function calculateHeadingAverage(){
-        if (headingStack.array.length == 0) return null;
+        if (headingStack.array.length == 0) {
+            watcher.gpsHeading = null;
+            return false;
+        }
         let headingResultCount = 0;
         let headingSummCos = 0;
         let headingSummSin = 0;
@@ -325,7 +366,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
         headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
-        return radToDeg(headingAverageRad);
+        watcher.gpsHeading = radToDeg(headingAverageRad);
+        return true;
     }
 
 
@@ -355,13 +397,16 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
 
     function updateData(element,data){
-        element.classList.remove("noDataClass");
+        
         if (data === null){
-            element.innerHTML = "null";
+            element.innerHTML = "---";
+            element.classList.add("noDataClass");
         } else if(Number.isNaN(data)){
             element.innerHTML = "NaN";
+            element.classList.add("noDataClass");
         } else{
         element.innerHTML = data;
+        element.classList.remove("noDataClass");
         }
     }
 
