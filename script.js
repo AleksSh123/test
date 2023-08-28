@@ -54,7 +54,7 @@ let pilot = {
     _listToClear: ["latitude", "longitude", "velocity", "baroAltitude", "gpsAltitude", "groundHeight", "bearing", "timestamp", "averageVelocity60"],
     clearData(){
         for (let key in this){
-            if (_listToClear.includes(key)){
+            if (this._listToClear.includes(key)){
                 this[key] = null;
             }
             if (key == "receivedData"){
