@@ -71,7 +71,8 @@ let watcher = {
     accuracy: null,
     devOrientationHeading: null,
     requestTime: null,
-    noGps: null
+    noGps: null,
+    headingModeDevOri: false
 }
 
 let calculations = {
@@ -148,12 +149,17 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             calculateDistance();
             calculateWatcherToPilotAzimut();
             updateData(distanceObject, calculations.distance);
-            if (watcher.gpsHeading != null){
+            if ((watcher.gpsHeading != null) && (!watcher.headingModeDevOri)) {
                 calculateDirectionsToPilot();
                 updateData(directionObject, calculations.directionToPilotGps);
                 rotateRider(calculations.directionToPilotGps);
                 setPointerColor("#4aa8dc");
-            } else{
+            } else if ((watcher.devOrientationHeading != null) && (watcher.headingModeDevOri)){
+                calculateDirectionsToPilot();
+                updateData(directionObject, calculations.directionToPilotOri);
+                rotateRider(calculations.directionToPilotOri);
+                setPointerColor("#4aa8dc");
+            } else {
                 setNoDirection();
             }
 
@@ -519,15 +525,24 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                  DeviceMotionEvent.requestPermission();
             };
             window.addEventListener("deviceorientation", handleOrientation);
+            watcher.headingModeDevOri = true;
+
     }
     
     function handleOrientation(event){
         let  angle = Math.round(event.alpha);
+        let transformedAngle = 0;
         if (angle <= 180){
-            watcher.devOrientationHeading =  angle;
+            transformedAngle =  angle;
         } else {
-            watcher.devOrientationHeading = angle - 360;
+            transformedAngle = angle - 360;
         }
+        if (transformedAngle != calculations.directionToPilotOri){
+            calculations.directionToPilotOri = transformedAngle;
+            updateView();
+        }
+
+
 
     };
     
