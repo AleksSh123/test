@@ -535,11 +535,14 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         //console.log("devOriEvent");
         let  angle = Math.round(event.alpha);
         let transformedAngle = 0;
+        /*
         if (angle <= 180){
-            transformedAngle =  angle - 90;
+            transformedAngle =  angle - 180;
         } else {
             transformedAngle = angle - 450;
         }
+        */
+        transformedAngle = angle - 180;
         //if (transformedAngle != calculations.directionToPilotOri){
         //    calculations.directionToPilotOri = transformedAngle;
         watcher.devOrientationHeading = transformedAngle;
