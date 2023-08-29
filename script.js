@@ -73,7 +73,8 @@ let watcher = {
     devOrientationHeading: null,
     requestTime: null,
     noGps: null,
-    headingModeDevOri: false
+    headingModeDevOri: false,
+    angle: null
 }
 
 let calculations = {
@@ -138,7 +139,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(groundHeightObject, pilot.groundHeight);
             updateData(instantSpeedObject, pilot.velocity);
             updateData(averageSpeedObject, pilot.averageVelocity60)
-            updateData(actualDateElement,convertToShortDate(pilot.timestamp))
+            //updateData(actualDateElement,convertToShortDate(pilot.timestamp))
+
         } else {
             updateData(altitudeObject, null);
             updateData(groundHeightObject, null);
@@ -151,6 +153,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if ((!watcher.noGps) && (pilot.receivedData)){
             calculateDistance();
             calculateWatcherToPilotAzimut();
+            updateData(actualDateElement,calculations.watcherToPilotAzumit);
             updateData(distanceObject, calculations.distance);
             if ((watcher.gpsHeading != null) && (!watcher.headingModeDevOri)) {
                 calculateDirectionsToPilot();
@@ -538,19 +541,24 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     function handleOrientation(event){
         //console.log("devOriEvent");
         let  angle = - Math.round(event.alpha);
-        let transformedAngle = 0;
+        if (angle != watcher.angle){
+            let transformedAngle = 0;
         
-        if (angle <= 180){
-            transformedAngle =  angle;
-        } else {
-            transformedAngle = angle - 360;
+            if (angle <= 180){
+                transformedAngle =  angle;
+            } else {
+                transformedAngle = angle - 360;
+            }
+            watcher.devOrientationHeading = transformedAngle;
+            updateView();
+            watcher.angle = angle;
         }
+
         
         //transformedAngle = angle - 180;
         //if (transformedAngle != calculations.directionToPilotOri){
         //    calculations.directionToPilotOri = transformedAngle;
-        watcher.devOrientationHeading = transformedAngle;
-            updateView();
+
         //}
 
 
