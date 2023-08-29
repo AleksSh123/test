@@ -389,6 +389,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     function calculateDirectionsToPilot(){
         calculations.directionToPilotGps = Math.round(calculations.watcherToPilotAzumit - watcher.gpsHeading);
         calculations.directionToPilotOri = Math.round(calculations.watcherToPilotAzumit - watcher.devOrientationHeading);
+        console.log(calculations.directionToPilotOri);
     }
 
     /*
@@ -531,7 +532,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
     
     function handleOrientation(event){
-        console.log("devOriEvent");
+        //console.log("devOriEvent");
         let  angle = Math.round(event.alpha);
         let transformedAngle = 0;
         if (angle <= 180){
