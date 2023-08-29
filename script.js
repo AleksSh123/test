@@ -537,16 +537,16 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     
     function handleOrientation(event){
         //console.log("devOriEvent");
-        let  angle = Math.round(event.alpha);
+        let  angle = - Math.round(event.alpha);
         let transformedAngle = 0;
-        /*
+        
         if (angle <= 180){
-            transformedAngle =  angle - 180;
+            transformedAngle =  angle;
         } else {
-            transformedAngle = angle - 450;
+            transformedAngle = angle - 360;
         }
-        */
-        transformedAngle = angle - 180;
+        
+        //transformedAngle = angle - 180;
         //if (transformedAngle != calculations.directionToPilotOri){
         //    calculations.directionToPilotOri = transformedAngle;
         watcher.devOrientationHeading = transformedAngle;
