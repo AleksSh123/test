@@ -536,9 +536,9 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         let  angle = Math.round(event.alpha);
         let transformedAngle = 0;
         if (angle <= 180){
-            transformedAngle =  angle;
+            transformedAngle =  angle - 90;
         } else {
-            transformedAngle = angle - 360;
+            transformedAngle = angle - 450;
         }
         //if (transformedAngle != calculations.directionToPilotOri){
         //    calculations.directionToPilotOri = transformedAngle;
