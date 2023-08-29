@@ -125,12 +125,14 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
  
     function updateView(){
         
-        updateData(shiftedDateElement, watcher.requestTime);
-        if (!watcher.noGps){
-            updateData(accuracyObject,watcher.accuracy);
-        } else{
-            updateData(accuracyObject,"no GPS available");
-        }
+        //updateData(shiftedDateElement, watcher.requestTime);
+        updateData(shiftedDateElement, watcher.gpsHeading);
+        //if (!watcher.noGps){
+        //    updateData(accuracyObject,watcher.accuracy);
+        //} else{
+        //    updateData(accuracyObject,"no GPS available");
+        //}
+        updateData(accuracyObject,watcher.devOrientationHeading);
         if (pilot.receivedData){
             updateData(altitudeObject, pilot.baroAltitude);
             updateData(groundHeightObject, pilot.groundHeight);
@@ -163,6 +165,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             } else {
                 setNoDirection();
             }
+
+
 
 
 
