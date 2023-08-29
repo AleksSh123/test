@@ -372,10 +372,12 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         return result;
     }
 
+    /*
     function getDirectionsDelta(angle1, angle2){
         let result = Math.round(angle2 - angle1);
         return result;
     }
+    */
 
     function calculateDirectionsToPilot(){
         calculations.directionToPilotGps = Math.round(calculations.watcherToPilotAzumit - watcher.gpsHeading);
@@ -507,6 +509,28 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         lineRider.setAttribute('transform','rotate ('+angle+' 150 150)');
 
     }
+
+    function switchToDevori(){
+
+        if (
+            DeviceMotionEvent &&
+            typeof DeviceMotionEvent.requestPermission === "function"
+            ) {
+                 DeviceMotionEvent.requestPermission();
+            };
+            window.addEventListener("deviceorientation", handleOrientation);
+    }
+    
+    function handleOrientation(event){
+        let  angle = Math.round(event.alpha);
+        if (angle <= 180){
+            watcher.devOrientationHeading =  angle;
+        } else {
+            watcher.devOrientationHeading = angle - 360;
+        }
+
+    };
+    
     /*
     function gpsEmulation(){
         position.coords.latitude = -1;
@@ -522,3 +546,4 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         let tt = new Date();
         position.timestamp = tt.getTime();
     } */
+
