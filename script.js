@@ -11,6 +11,7 @@ const shiftedDateElement = document.getElementById("shiftedDate");
 const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
+const switchModeButtonElement = document.getElementById("inputModeElement");
 const accuracyObject = document.getElementById("accuracy");
 let timerPilotUpdate = 0;
 //let azimutTest =0;
@@ -526,7 +527,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             };
             window.addEventListener("deviceorientation", handleOrientation);
             watcher.headingModeDevOri = true;
-
+            switchModeButtonElement.classList.add("inputButtonClassPressed");
     }
     
     function handleOrientation(event){
