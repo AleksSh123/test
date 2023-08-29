@@ -539,10 +539,11 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         } else {
             transformedAngle = angle - 360;
         }
-        if (transformedAngle != calculations.directionToPilotOri){
-            calculations.directionToPilotOri = transformedAngle;
+        //if (transformedAngle != calculations.directionToPilotOri){
+        //    calculations.directionToPilotOri = transformedAngle;
+        watcher.devOrientationHeading = transformedAngle;
             updateView();
-        }
+        //}
 
 
 
