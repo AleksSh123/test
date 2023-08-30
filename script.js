@@ -416,11 +416,11 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         let y = Math.sqrt(Math.pow((bLatCos*deltaSin),2) + Math.pow((aLatCos*bLatSin-aLatSin*bLatCos*deltaCos),2))
         let x = aLatSin * bLatSin + aLatCos * bLatCos * deltaCos;
         const ad = Math.atan2(y, x);
-        const distance = ad * radius;
+        const distance = ((ad * radius) / 1000).toFixed(3);
         // bearing 
         x = (aLatCos * bLatSin) - (aLatSin * bLatCos * deltaCos);
         y = deltaSin * bLatCos;
-        const z = Math.atan(y / x);
+        const z = Math.atan2(y, x);
         const bearing = (z * 180/Math.PI + 360) % 360;
         calculations.distance = distance;
         calculations.watcherToPilotAzumit = bearing;
