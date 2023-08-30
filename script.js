@@ -164,8 +164,9 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             setNoDirection();
         }
         if ((!watcher.noGps) && (pilot.receivedData)){
-            calculateDistance();
-            calculateWatcherToPilotAzimut();
+            //calculateDistance();
+            //calculateWatcherToPilotAzimut();
+            calculateDistanceBearing();
             updateData(distanceObject, calculations.distance);
             if ((watcher.gpsHeading != null) && (!watcher.headingModeDevOri)) {
                 calculateDirectionsToPilot();
@@ -396,6 +397,33 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         let result = radToDeg(z); //to degree
         calculations.watcherToPilotAzumit = result;
         return result;
+    }
+
+    function calculateDistanceBearing(){
+        const radius = 6372795;
+        const latitudeA  = degToRad(watcher.latitude);
+        const longitudeA = degToRad(watcher.longitude);
+        const latitudeB = degToRad(pilot.latitude);
+        const longitudeB = degToRad(pilot.longitude);0
+        const aLatCos = Math.cos(latitudeA);
+        const aLatSin = Math.sin(latitudeA);
+        const bLatCos = Math.cos(latitudeB);
+        const bLatSin = Math.sin(latitudeB);
+        const deltaLongitude = longitudeB - longitudeA;
+        const deltaCos = Math.cos(deltaLongitude);
+        const deltaSin = Math.sin(deltaLongitude);
+        //distance
+        let y = Math.sqrt(Math.pow((bLatCos*deltaSin),2) + Math.pow((aLatCos*bLatSin-aLatSin*bLatCos*deltaCos),2))
+        let x = aLatSin * bLatSin + aLatCos * bLatCos * deltaCos;
+        const ad = Math.atan2(y, x);
+        const distance = ad * radius;
+        // bearing 
+        x = (aLatCos * bLatSin) - (aLatSin * bLatCos * deltaCos);
+        y = deltaSin * bLatCos;
+        const z = Math.atan(y / x);
+        const bearing = (z * 180/Math.PI + 360) % 360;
+        calculations.distance = distance;
+        calculations.watcherToPilotAzumit = bearing;
     }
 
     /*
