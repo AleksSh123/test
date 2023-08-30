@@ -126,20 +126,26 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
  
     function updateView(){
         
-        //updateData(shiftedDateElement, watcher.requestTime);
-        updateData(shiftedDateElement, watcher.gpsHeading);
-        //if (!watcher.noGps){
-        //    updateData(accuracyObject,watcher.accuracy);
-        //} else{
-        //    updateData(accuracyObject,"no GPS available");
-        //}
-        updateData(accuracyObject,watcher.devOrientationHeading);
+//////////////////////debug section
+        document.getElementById("gpsH").innerHTML = watcher.gpsHeading;
+        document.getElementById("devOriH").innerHTML = watcher.devOrientationHeading;
+        document.getElementById("az").innerHTML = calculations.watcherToPilotAzumit;
+        document.getElementById("toPHGps").innerHTML = calculations.directionToPilotGps;
+        document.getElementById("toPHDevOri").innerHTML = calculations.directionToPilotOri;
+///////////////////////
+
+        updateData(shiftedDateElement, watcher.requestTime);
+        if (!watcher.noGps){
+            updateData(accuracyObject,watcher.accuracy);
+        } else{
+            updateData(accuracyObject,"no GPS available");
+        }
         if (pilot.receivedData){
             updateData(altitudeObject, pilot.baroAltitude);
             updateData(groundHeightObject, pilot.groundHeight);
             updateData(instantSpeedObject, pilot.velocity);
             updateData(averageSpeedObject, pilot.averageVelocity60)
-            //updateData(actualDateElement,convertToShortDate(pilot.timestamp))
+            updateData(actualDateElement,convertToShortDate(pilot.timestamp))
 
         } else {
             updateData(altitudeObject, null);
@@ -153,7 +159,6 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if ((!watcher.noGps) && (pilot.receivedData)){
             calculateDistance();
             calculateWatcherToPilotAzimut();
-            updateData(actualDateElement,calculations.watcherToPilotAzumit);
             updateData(distanceObject, calculations.distance);
             if ((watcher.gpsHeading != null) && (!watcher.headingModeDevOri)) {
                 calculateDirectionsToPilot();
@@ -526,16 +531,22 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
 
     function switchToDevori(){
-
-        if (
-            DeviceMotionEvent &&
-            typeof DeviceMotionEvent.requestPermission === "function"
-            ) {
-                 DeviceMotionEvent.requestPermission();
-            };
-            window.addEventListener("deviceorientation", handleOrientation);
-            watcher.headingModeDevOri = true;
-            switchModeButtonElement.classList.add("inputButtonClassPressed");
+        if (watcher.headingModeDevOri){
+            window.removeEventListener("deviceorientation", handleOrientation);
+            watcher.headingModeDevOri = false;
+            switchModeButtonElement.classList.remove("inputButtonClassPressed");
+        } else{
+            if (
+                DeviceMotionEvent &&
+                typeof DeviceMotionEvent.requestPermission === "function"
+                ) {
+                     DeviceMotionEvent.requestPermission();
+                };
+                window.addEventListener("deviceorientation", handleOrientation);
+                watcher.headingModeDevOri = true;
+                switchModeButtonElement.classList.add("inputButtonClassPressed");
+        }
+        
     }
     
     function handleOrientation(event){
