@@ -13,6 +13,13 @@ const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const switchModeButtonElement = document.getElementById("inputModeElement");
 const accuracyObject = document.getElementById("accuracy");
+//////////////////////////
+let debug1 = document.getElementById("gpsH");
+let debug2 = document.getElementById("devOriH");
+let debug3 = document.getElementById("az");
+let debug4 = document.getElementById("toPHGps")
+let debug5 = document.getElementById("toPHDevOri");
+///////////////////////////
 let timerPilotUpdate = 0;
 //let azimutTest =0;
 const options = {
@@ -127,11 +134,11 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     function updateView(){
         
 //////////////////////debug section
-        document.getElementById("gpsH").innerHTML = watcher.gpsHeading;
-        document.getElementById("devOriH").innerHTML = watcher.devOrientationHeading;
-        document.getElementById("az").innerHTML = calculations.watcherToPilotAzumit;
-        document.getElementById("toPHGps").innerHTML = calculations.directionToPilotGps;
-        document.getElementById("toPHDevOri").innerHTML = calculations.directionToPilotOri;
+        updateData(debug1, watcher.gpsHeading);
+        updateData(debug2, watcher.devOrientationHeading);
+        updateData(debug3, calculations.watcherToPilotAzumit);
+        updateData(debug4, calculations.directionToPilotGps);
+        updateData(debug5, calculations.directionToPilotOri);
 ///////////////////////
 
         updateData(shiftedDateElement, watcher.requestTime);
