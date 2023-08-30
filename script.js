@@ -540,14 +540,14 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     
     function handleOrientation(event){
         //console.log("devOriEvent");
-        let  angle = - Math.round(event.alpha);
+        let  angle =  Math.round(event.webkitCompassHeading);
         if (angle != watcher.angle){
             let transformedAngle = 0;
         
             if (angle <= 180){
-                transformedAngle =  angle;
+                transformedAngle =  - angle;
             } else {
-                transformedAngle = angle - 360;
+                transformedAngle =  360 - angle;
             }
             watcher.devOrientationHeading = transformedAngle;
             updateView();
