@@ -482,8 +482,10 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         }
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
-        headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
-        watcher.gpsHeading = radToDeg(headingAverageRad);
+        //headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
+        headingAverageRad = Math.atan2(headingAverageSummSin, headingAverageSummCos);
+        //watcher.gpsHeading = radToDeg(headingAverageRad);
+        watcher.gpsHeading = (headingAverageRad * 180 / Math.PI + 360) % 360;
         return true;
     }
 
