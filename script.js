@@ -13,6 +13,7 @@ const lineRider = document.getElementById("line2");
 const inputButtonElement = document.getElementById("inputButtonElement");
 const switchModeButtonElement = document.getElementById("inputModeElement");
 const accuracyObject = document.getElementById("accuracy");
+const inputPilotButtonElement = document.getElementById("inputPilotButton");
 //////////////////////////
 let debug1 = document.getElementById("gpsH");
 let debug2 = document.getElementById("devOriH");
@@ -173,7 +174,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         pilot.id = pilotIdElement.value;
         pilot.timeShift = timeShiftElement.value * 1000;
         inputButtonElement.classList.add("inputButtonClassPressed");
-        
+        inputPilotButtonElement.classList.add("inputPilotButtonPressed");
         if (timerPilotUpdate){
             clearInterval(timerPilotUpdate);
         }
