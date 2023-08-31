@@ -10,10 +10,13 @@ const timeShiftElement = document.getElementById("timeShift");
 const shiftedDateElement = document.getElementById("shiftedDate");
 const actualDateElement = document.getElementById("actualDate");
 const lineRider = document.getElementById("line2");
-const inputButtonElement = document.getElementById("inputButtonElement");
-const switchModeButtonElement = document.getElementById("inputModeElement");
+//const inputButtonElement = document.getElementById("inputButtonElement");
+//const switchModeButtonElement = document.getElementById("inputModeElement");
 const accuracyObject = document.getElementById("accuracy");
 const inputPilotButtonElement = document.getElementById("inputPilotButton");
+const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
+const inputModeButtonElement = document.getElementById("inputModeButton");
+const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
 //////////////////////////
 let debug1 = document.getElementById("gpsH");
 let debug2 = document.getElementById("devOriH");
@@ -173,8 +176,11 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     function inputPilot(){
         pilot.id = pilotIdElement.value;
         pilot.timeShift = timeShiftElement.value * 1000;
-        inputButtonElement.classList.add("inputButtonClassPressed");
-        inputPilotButtonElement.classList.add("inputPilotButtonPressed");
+        //inputButtonElement.classList.add("inputButtonClassPressed");
+        if ((pilot.id == 0) || (!Number.isInteger(Number(pilot.id)))) return;
+        if ((pilot.timeShift == 0) || (!Number.isInteger(Number(pilot.timeShift)))) return;
+        inputPilotButtonElement.classList.add("inputButtonClassPressed");
+        inputPilotButtonLabelElement.classList.add("inputButtonLabelPressedClass");
         if (timerPilotUpdate){
             clearInterval(timerPilotUpdate);
         }
@@ -401,7 +407,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if (watcher.headingModeDevOri){
             window.removeEventListener("deviceorientation", handleOrientation);
             watcher.headingModeDevOri = false;
-            switchModeButtonElement.classList.remove("inputButtonClassPressed");
+            inputModeButtonElement.classList.remove("inputButtonClassPressed");
+            inputModeButtonLabelElement.classList.remove("inputButtonLabelPressedClass");
         } else{
             if (
                 DeviceMotionEvent &&
@@ -411,7 +418,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                 };
                 window.addEventListener("deviceorientation", handleOrientation);
                 watcher.headingModeDevOri = true;
-                switchModeButtonElement.classList.add("inputButtonClassPressed");
+                inputModeButtonElement.classList.add("inputButtonClassPressed");
+                inputModeButtonLabelElement.classList.add("inputButtonLabelPressedClass");
         }
         
     }

@@ -2,16 +2,10 @@ body {
     font-size: 1em;
 }
 div{
-    
     max-width: 400px;
-    
-   
-    
 }
 .coordinates{
-    
 
-    
     justify-content: space-around;
 }
 .errBox{
@@ -38,17 +32,19 @@ div{
 .firstLevelContainer{
     border: solid 1px;
 }
-label{
-    
-}
+
 .inputButtonClass{
     margin-top: 7px;
+    box-shadow: 0 2px grey;
 }
-.inputButtonClass::after{
+.inputButtonClassPressed{
+    transform: translateY(0.1em);
+    box-shadow: none;
+}
+.inputButtonLabelClass::after{
     display: none;
-    
 }
-.inputButtonClassPressed:after{
+.inputButtonLabelPressedClass::after{
     content: "\2713";
     margin-left: 0.5em;
     display: inline;
@@ -62,7 +58,4 @@ label{
 }
 .noDataClass{
     color: red;
-}
-.inputPilotButtonPressed{
-    transform: translateY(0.1em);
 }
