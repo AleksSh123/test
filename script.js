@@ -107,27 +107,12 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if (isDefinedValue(position.coords.heading)){
             headingStack.push(position.coords.heading);
         }
-        /*
-        resultSpeed = calculateSpeedAverage();
-        speed5 = resultSpeed[0];
-        speed10m = resultSpeed[1];
-        */
         calculateHeadingAverage();
-        /*
-        fillWatcherData();
-        if (pilot.receivedData){
-            fillCalculatedData();
-        }
-        */
         updateView();
     }
     function errorGetGPS(){
-        //watcher.latitude = null;
-        //watcher.longitude = null;
-        //watcher.accuracy = null;
         watcher.gpsHeading = null;
         watcher.noGps = true;
-        //fillWatcherData("no GPS available");
         updateView();
     }
  
@@ -181,17 +166,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             } else {
                 setNoDirection();
             }
-
-
-
-
-
         }
- 
-
     }
-
-
 
     function inputPilot(){
         pilot.id = pilotIdElement.value;
@@ -202,38 +178,16 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             clearInterval(timerPilotUpdate);
         }
         pilot.clearData();
-        
         fillPilotData();
         timerPilotUpdate = setInterval(fillPilotData,5000);
-
     }
 
     async function fillPilotData(){ 
         let pilotData = await getPilotData(pilot.id, pilot.timeShift);
         updateView();
-        /*
-        let noDataMessage = "no data";
-        if (pilotData){
-            updateData(altitudeObject, pilot.baroAltitude);
-            updateData(groundHeightObject, pilot.groundHeight);
-            updateData(instantSpeedObject, pilot.velocity);
-            updateData(averageSpeedObject, pilot.averageVelocity60)
-            updateData(actualDateElement,convertToShortDate(pilot.timestamp));
-
-        } else{
-            updateData(altitudeObject, noDataMessage); //переделать на сохранение последних полученных данных в течении суток
-            updateData(groundHeightObject, noDataMessage);
-            updateData(instantSpeedObject, noDataMessage);
-            updateData(averageSpeedObject, noDataMessage)
-            updateData(actualDateElement,noDataMessage);
-            updateData(distanceObject,noDataMessage);
-        }
-        */
     }
 
-    async function getPilotData(pilotId, timeShift){
-        
-        
+    async function getPilotData(pilotId, timeShift){ 
         let currentTime = new Date().getTime();
         let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
         watcher.requestTime = convertToShortDate(requestTime);
@@ -270,46 +224,6 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         return liveData;
     }
 
-    /*
-    function fillWatcherData(){
-        
-        if (array[2]!=0 && array[3]!=0 && array[4]!=0){
-            updateData(distanceObject, calculateDistance(array));
-            let directionToPilot = calculateDirection(array);
-            updateData(directionObject,directionToPilot);
-            setPointerColor("#4aa8dc");
-            rotateRider(directionToPilot);
-        } 
-       
-        updateData(accuracyObject,watcher.accuracy);
-        updateData(shiftedDateElement, watcher.requestTime);
-    }
-        */
-
-        /*
-    function fillCalculatedData(){
-        //0,1 -watcher coords, 2,3 - pilot coords, 4,5 - watcher gps and devOri heading
-        calculateDistance();
-        calculateWatcherToPilotAzimut();
-        calculateDirectionsToPilot();
-        updateData(distanceObject, pilot.distance);
-        updateData(directionObject, calculations.directionToPilotGps);
-        rotateRider(calculations.directionToPilotGps);
-        setPointerColor("#4aa8dc");
-        /*
-        let pilotAzimut = calculateWatcherToPilotAzimut(array);
-        let watcherHeading = array[4];
-        if (watcherHeading != null){
-            let directionToPilot = getDirectionsDelta(pilotAzimut, watcherHeading);
-            updateData(directionObject,directionToPilot);
-            setPointerColor("#4aa8dc");
-            rotateRider(directionToPilot);
-        } else {
-            updateData(directionObject,"---");
-        }
-      
-    }
-      */
 
     function calculateAverageSpeed60(array){ 
         let speedSumm = 0;
@@ -324,79 +238,6 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         }
         let averageSpeed = speedSumm / speedEntryCount;
         return Math.round(averageSpeed,1);
-    }
-
-    function calculateDistance(){
-        const latitudeDegDist = 111.321377778;
-        const longitudeDegDist = 111.134861111;
-        /*
-        let latitudeA  = array[0];
-        let longitudeA = array[1];
-        let latitudeB = array[2];
-        let longitudeB = array[3];
-        */
-        let latitudeA  = watcher.latitude;
-        let longitudeA = watcher.longitude;
-        let latitudeB = pilot.latitude;
-        let longitudeB = pilot.longitude;
-        let deltaLatitude = latitudeB - latitudeA;
-        let deltaLongitude = longitudeB - longitudeA;
-        let distanceLatitudeKm = deltaLatitude * latitudeDegDist * Math.cos(latitudeA);
-        let distanceLongitudeKm = deltaLongitude * longitudeDegDist;
-        let distance = Math.hypot(distanceLatitudeKm, distanceLongitudeKm);
-        let result = distance.toFixed(3);
-        calculations.distance = result;
-        return result;
-    }
-    /*
-    function calculateDirection(array){
-        let azimut = NaN;
-        let externalDirection = array[4];
-        let latitudeA  = degToRad(array[0]);
-        let longitudeA = degToRad(array[1]);
-        let latitudeB = degToRad(array[2]);
-        let longitudeB = degToRad(array[3]);
-        const deltaLongitude = longitudeB - longitudeA;
-        const aLatCos = Math.cos(latitudeA);
-        const aLatSin = Math.sin(latitudeA);
-        const bLatCos = Math.cos(latitudeB);
-        const bLatSin = Math.sin(latitudeB)
-        const deltaCos = Math.cos(deltaLongitude);
-        const deltaSin = Math.sin(deltaLongitude);
-        const x = (aLatCos * bLatSin) - (aLatSin * bLatCos * deltaCos);
-        const y = deltaSin * bLatCos;
-        let z = Math.atan2(-y, x);
-        z = radToDeg(z); //to degree
-
-        let directionToPilot = z - externalDirection;
-        return  -Math.round(directionToPilot);
-    }
-    */
-    function calculateWatcherToPilotAzimut(){
-        /*
-        let latitudeA  = degToRad(array[0]);
-        let longitudeA = degToRad(array[1]);
-        let latitudeB = degToRad(array[2]);
-        let longitudeB = degToRad(array[3]);
-        */
-        let latitudeA  = watcher.latitude;
-        let longitudeA = watcher.longitude;
-        let latitudeB = pilot.latitude;
-        let longitudeB = pilot.longitude;
-
-        const deltaLongitude = longitudeB - longitudeA;
-        const aLatCos = Math.cos(latitudeA);
-        const aLatSin = Math.sin(latitudeA);
-        const bLatCos = Math.cos(latitudeB);
-        const bLatSin = Math.sin(latitudeB)
-        const deltaCos = Math.cos(deltaLongitude);
-        const deltaSin = Math.sin(deltaLongitude);
-        const x = (aLatCos * bLatSin) - (aLatSin * bLatCos * deltaCos);
-        const y = deltaSin * bLatCos;
-        let z = Math.atan2(-y, x);
-        let result = radToDeg(z); //to degree
-        calculations.watcherToPilotAzumit = result;
-        return result;
     }
 
     function calculateDistanceBearing(){
@@ -426,12 +267,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         calculations.watcherToPilotAzumit = bearing;
     }
 
-    /*
-    function getDirectionsDelta(angle1, angle2){
-        let result = Math.round(angle2 - angle1);
-        return result;
-    }
-    */
+
 
     function calculateDirectionsToPilot(){
         calculations.directionToPilotGps = Math.round(calculations.watcherToPilotAzumit - watcher.gpsHeading);
@@ -482,16 +318,9 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         }
         headingAverageSummCos = headingSummCos / headingResultCount;
         headingAverageSummSin = headingSummSin / headingResultCount;
-        //headingAverageRad = Math.atan2(-headingAverageSummSin, headingAverageSummCos);
         headingAverageRad = Math.atan2(headingAverageSummSin, headingAverageSummCos);
-        //watcher.gpsHeading = radToDeg(headingAverageRad);
         watcher.gpsHeading = (headingAverageRad * 180 / Math.PI + 360) % 360;
         return true;
-    }
-
-
-    function getDevOrientationHeading(){
-                
     }
 
     function convertToShortDate(time){
@@ -587,33 +416,12 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
     
     function handleOrientation(event){
-        //console.log("devOriEvent");
         let  angle = Math.round(event.webkitCompassHeading);
         if (angle != watcher.angle){
-            /*
-            let transformedAngle = 0;
-        
-            if (angle <= 180){
-                transformedAngle =  - angle;
-            } else {
-                transformedAngle =  360 - angle;
-            }
-            watcher.devOrientationHeading = transformedAngle;
-            */
             watcher.devOrientationHeading = angle;
             updateView();
             watcher.angle = angle;
         }
-
-        
-        //transformedAngle = angle - 180;
-        //if (transformedAngle != calculations.directionToPilotOri){
-        //    calculations.directionToPilotOri = transformedAngle;
-
-        //}
-
-
-
     };
     
     /*
