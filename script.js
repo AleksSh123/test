@@ -17,13 +17,13 @@ const inputPilotButtonElement = document.getElementById("inputPilotButton");
 const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
 const inputModeButtonElement = document.getElementById("inputModeButton");
 const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
-//////////////////////////
+/* //////////////////////////
 let debug1 = document.getElementById("gpsH");
 let debug2 = document.getElementById("devOriH");
 let debug3 = document.getElementById("az");
 let debug4 = document.getElementById("toPHGps")
 let debug5 = document.getElementById("toPHDevOri");
-///////////////////////////
+///////////////////////////  */
 let timerPilotUpdate = 0;
 //let azimutTest =0;
 const options = {
@@ -121,7 +121,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
  
     function updateView(){
-        
+        /*
 //////////////////////debug section
         updateData(debug1, watcher.gpsHeading);
         updateData(debug2, watcher.devOrientationHeading);
@@ -129,6 +129,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         updateData(debug4, calculations.directionToPilotGps);
         updateData(debug5, calculations.directionToPilotOri);
 ///////////////////////
+*/
 
         updateData(shiftedDateElement, watcher.requestTime);
         if (!watcher.noGps){
