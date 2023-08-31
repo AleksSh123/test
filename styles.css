@@ -36,10 +36,12 @@ div{
 .inputButtonClass{
     margin-top: 7px;
     box-shadow: 0 2px grey;
+    -webkit-box-shadow: 0 2px grey;
 }
 .inputButtonClassPressed{
     transform: translateY(0.1em);
     box-shadow: none;
+    -webkit-box-shadow: none;
 }
 .inputButtonLabelClass::after{
     display: none;
