@@ -38,18 +38,13 @@
                 </div>
                 <div class="inputElementClass row">
                     <div class="col-12 justify-content-center">
-                        <label for="inputPilotButton"  id="inputPilotLabel" class="inputButtonLabelClass">
-                            <input type="button" id="inputPilotButton" class="btn btn-primary btn-sm" data-bs-toggle="button" value="Введите летуна" onclick="inputPilot()">
+                        <label for="inputPilotButton"  id="inputPilotLabel" class="inputButtonLabelClass d-block gap-3">
+                            <input type="button" id="inputPilotButton" class="btn btn-primary btn-sm" data-bs-toggle="button" autocomplete="off" value="Введите летуна" onclick="inputPilot()">
+                            <input type="button" id="inputModeButton" class="btn btn-primary btn-sm" data-bs-toggle="button" autocomplete="off" value="devOrientation" onclick="switchToDevori()">
                         </label>
                     </div>
                 </div>
-                <div class="inputElementClass row">
-                    <div class="col-12 justify-content-center">
-                        <label for="inputModeButton"  id="inputModeLabel" class="inputButtonLabelClass">
-                            <input type="button" id="inputModeButton" class="btn btn-primary btn-sm" data-bs-toggle="button" value="devOrientation" onclick="switchToDevori()">
-                        </label>
-                    </div>
-                </div>
+
             </div>
         </div>
         <div class="pilotDataElementClass row align-items-center">
