@@ -17,9 +17,27 @@
     <div class="container firstLevelContainer">
         <div class="inputPilotClass row">
             <div class="headerClass">
-                <h6>Shlyapa web v.1.0.7</h6>
+                <h6>Shlyapa web v.1.0.8</h6>
             </div>
-            <div class="inputContainerClass">
+            <div class="input-group mb-2">
+                <span class="col-3 input-group-text">
+                    ID
+                </span>
+                <input type="text" id="pilotId" class="form-control col-6" value="4673">
+            </div>
+            <div class="input-group mb-2">
+                <span class="col-3 input-group-text">
+                    Timeshift
+                </span>
+                <input type="text" id="timeShift" class="form-control" value="300">
+
+            </div>
+            <div class="d-flex justify-content-around">
+                <input type="button" id="inputModeButton" class="inputButtonClass btn btn-primary" value="включить компас" data-bs-toggle="button" autocomplete="off" onclick="switchToDevori()">
+                <input type="button" id="inputPilotButton" class="inputButtonClass btn btn-primary" value="запустить слежку" data-bs-toggle="button" autocomplete="off" onclick="inputPilot()" >
+
+            </div>
+<!--             <div class="inputContainerClass">
                 <div class="inputElementClass row gx-1">
                     <div class="col-3 text-end">
                          ID:
@@ -45,7 +63,7 @@
                     </div>
                 </div>
 
-            </div>
+            </div> -->
         </div>
         <div class="pilotDataElementClass row align-items-center">
                 <div class="col-6">

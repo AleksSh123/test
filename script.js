@@ -14,9 +14,9 @@ const lineRider = document.getElementById("line2");
 //const switchModeButtonElement = document.getElementById("inputModeElement");
 const accuracyObject = document.getElementById("accuracy");
 const inputPilotButtonElement = document.getElementById("inputPilotButton");
-const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
+//const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
 const inputModeButtonElement = document.getElementById("inputModeButton");
-const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
+//const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
 /* //////////////////////////
 let debug1 = document.getElementById("gpsH");
 let debug2 = document.getElementById("devOriH");
@@ -178,16 +178,24 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         pilot.id = pilotIdElement.value;
         pilot.timeShift = timeShiftElement.value * 1000;
         //inputButtonElement.classList.add("inputButtonClassPressed");
-        if ((pilot.id == 0) || (!Number.isInteger(Number(pilot.id)))) return;
-        if ((pilot.timeShift == 0) || (!Number.isInteger(Number(pilot.timeShift)))) return;
-        inputPilotButtonElement.classList.add("inputButtonClassPressed");
-        inputPilotButtonLabelElement.classList.add("inputButtonLabelPressedClass");
         if (timerPilotUpdate){
+            pilotIdElement.disabled = false;
+            timeShiftElement.disabled = false;
+            inputPilotButtonElement.classList.remove("btn-success");
+            inputPilotButtonElement.classList.remove("inputButtonClassPressed");
             clearInterval(timerPilotUpdate);
-        }
-        pilot.clearData();
-        fillPilotData();
-        timerPilotUpdate = setInterval(fillPilotData,5000);
+            timerPilotUpdate = 0;
+        } else {
+            if ((pilot.id == 0) || (!Number.isInteger(Number(pilot.id)))) return;
+            if ((pilot.timeShift == 0) || (!Number.isInteger(Number(pilot.timeShift)))) return;
+            pilotIdElement.disabled = true;
+            timeShiftElement.disabled = true;
+            pilot.clearData();
+            fillPilotData();
+            timerPilotUpdate = setInterval(fillPilotData,5000);
+            inputPilotButtonElement.classList.add("btn-success");
+            inputPilotButtonElement.classList.add("inputButtonClassPressed");
+        }        
     }
 
     async function fillPilotData(){ 
@@ -408,8 +416,9 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if (watcher.headingModeDevOri){
             window.removeEventListener("deviceorientation", handleOrientation);
             watcher.headingModeDevOri = false;
+            inputModeButtonElement.classList.remove("btn-success");
             inputModeButtonElement.classList.remove("inputButtonClassPressed");
-            inputModeButtonLabelElement.classList.remove("inputButtonLabelPressedClass");
+
         } else{
             if (
                 DeviceMotionEvent &&
@@ -419,8 +428,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                 };
                 window.addEventListener("deviceorientation", handleOrientation);
                 watcher.headingModeDevOri = true;
+                inputModeButtonElement.classList.add("btn-success");
                 inputModeButtonElement.classList.add("inputButtonClassPressed");
-                inputModeButtonLabelElement.classList.add("inputButtonLabelPressedClass");
         }
         
     }
