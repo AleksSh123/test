@@ -176,15 +176,15 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         }
     }
 
-    function inputPilot(){
+    async function inputPilot(){
         pilot.id = pilotIdElement.value;
         pilot.maxDays = timeShiftElement.value;
         if ((pilot.id == 0) || (!Number.isInteger(Number(pilot.id)))) {
-            alert("не числовое или нулевое значение ID!");
+            alert("РЅРµ С‡РёСЃР»РѕРІРѕРµ РёР»Рё РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ ID!");
             return;
         }
         if ((pilot.timeShift == 0) || (!Number.isInteger(Number(pilot.timeShift)))){
-            alert("не числовое или нулевое значение Timeshift!");
+            alert("РЅРµ С‡РёСЃР»РѕРІРѕРµ РёР»Рё РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ Timeshift!");
             return;
         } 
         //pilot.timeShift = timeShiftElement.value * 1000;
@@ -202,35 +202,59 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             timeShiftElement.disabled = true;
             pilot.clearData();
             pilot.earliestDate =  maxDaysToData(pilot.maxDays);
-            pilot.timeShift = getTimeShift(pilot.earliestDate);
-            fillPilotData();
-            timerPilotUpdate = setInterval(fillPilotData,5000);
-            inputPilotButtonElement.classList.add("btn-success");
-            inputPilotButtonElement.classList.add("inputButtonClassPressed");
+            pilot.timeShift =  await getTimeShift(pilot.earliestDate);
+            if (pilot.timeShift == -1){
+                fillPilotNoData();
+                pilotIdElement.disabled = false;
+                timeShiftElement.disabled = false;
+                return;
+            } else {
+                fillPilotData();
+                timerPilotUpdate = setInterval(fillPilotData,5000);
+                inputPilotButtonElement.classList.add("btn-success");
+                inputPilotButtonElement.classList.add("inputButtonClassPressed");
+            }
+
         }        
     }
 
     function maxDaysToData(daysCount){
-        const currentDate = new Date();
-        const date = longTime.getDate();
-        const month = longTime.getMonth();
-        const year = longTime.getFullYear();
-        const hour = longTime.getHours();
-        const minute = longTime.getMinutes();
-        const seconds = longTime.getSeconds();
-
+        let currentDate = new Date();
+        let beginDayDateUnix = currentDate.setHours(00,00,00,00);
+        result = beginDayDateUnix - (86400000 * (daysCount - 1));
         pilot.earliestDate = result;
         return result;
     }
 
-    function getTimeShift(date){
-        pilot.timeShift = result;
-        return result;
+    async function getTimeShift(date){
+        pilot.timeShift = 300000;
+        let data = null;
+        let response = null;
+        while ((getRequestUnixTime(pilot.timeShift) > date) && (!data)){
+            response = await getLiveData(pilot.id, Math.round(getRequestUnixTime(pilot.timeShift)/1000));
+            data = response[pilot.id];
+            if (!data){
+                pilot.timeShift += 9000000;
+            }
+        }
+        if (!data) pilot.timeShift = -1;
+        return pilot.timeShift;
+    }
+
+    function getRequestUnixTime(shift){
+        let currentTime = new Date().getTime();
+        let  requestUnixTime = Math.round(currentTime - Number(shift));
+        return requestUnixTime;
     }
 
     async function fillPilotData(){ 
         const pilotData = await getPilotData(pilot.id, pilot.timeShift);
         updateView();
+    }
+
+    function fillPilotNoData(){
+        updateView();
+        updateData(altitudeObject, "no data");
     }
 
     async function getPilotData(pilotId, timeShift){ 
