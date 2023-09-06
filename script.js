@@ -63,6 +63,8 @@ let pilot = {
     receivedData: false,
     id: null,
     timeShift: null,
+    maxDays: null,
+    earliestDate: null,
     _listToClear: ["latitude", "longitude", "velocity", "baroAltitude", "gpsAltitude", "groundHeight", "bearing", "timestamp", "averageVelocity60"],
     clearData(){
         for (let key in this){
@@ -176,7 +178,16 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
 
     function inputPilot(){
         pilot.id = pilotIdElement.value;
-        pilot.timeShift = timeShiftElement.value * 1000;
+        pilot.maxDays = timeShiftElement.value;
+        if ((pilot.id == 0) || (!Number.isInteger(Number(pilot.id)))) {
+            alert("не числовое или нулевое значение ID!");
+            return;
+        }
+        if ((pilot.timeShift == 0) || (!Number.isInteger(Number(pilot.timeShift)))){
+            alert("не числовое или нулевое значение Timeshift!");
+            return;
+        } 
+        //pilot.timeShift = timeShiftElement.value * 1000;
         //inputButtonElement.classList.add("inputButtonClassPressed");
         if (timerPilotUpdate){
             pilotIdElement.disabled = false;
@@ -186,11 +197,12 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             clearInterval(timerPilotUpdate);
             timerPilotUpdate = 0;
         } else {
-            if ((pilot.id == 0) || (!Number.isInteger(Number(pilot.id)))) return;
-            if ((pilot.timeShift == 0) || (!Number.isInteger(Number(pilot.timeShift)))) return;
+
             pilotIdElement.disabled = true;
             timeShiftElement.disabled = true;
             pilot.clearData();
+            pilot.earliestDate =  maxDaysToData(pilot.maxDays);
+            pilot.timeShift = getTimeShift(pilot.earliestDate);
             fillPilotData();
             timerPilotUpdate = setInterval(fillPilotData,5000);
             inputPilotButtonElement.classList.add("btn-success");
@@ -198,8 +210,26 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         }        
     }
 
+    function maxDaysToData(daysCount){
+        const currentDate = new Date();
+        const date = longTime.getDate();
+        const month = longTime.getMonth();
+        const year = longTime.getFullYear();
+        const hour = longTime.getHours();
+        const minute = longTime.getMinutes();
+        const seconds = longTime.getSeconds();
+
+        pilot.earliestDate = result;
+        return result;
+    }
+
+    function getTimeShift(date){
+        pilot.timeShift = result;
+        return result;
+    }
+
     async function fillPilotData(){ 
-        let pilotData = await getPilotData(pilot.id, pilot.timeShift);
+        const pilotData = await getPilotData(pilot.id, pilot.timeShift);
         updateView();
     }
 
