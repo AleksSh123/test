@@ -34,7 +34,12 @@
             </div>
             <div class="d-flex justify-content-around">
                 <input type="button" id="inputModeButton" class="inputButtonClass btn btn-primary" value="включить компас" data-bs-toggle="button" autocomplete="off" onclick="switchToDevori()">
-                <input type="button" id="inputPilotButton" class="inputButtonClass btn btn-primary" value="запустить слежку" data-bs-toggle="button" autocomplete="off" onclick="inputPilot()" >
+                <!-- <input type="button" id="inputPilotButton" class="inputButtonClass btn btn-primary" value="запустить слежку" data-bs-toggle="button" autocomplete="off" onclick="inputPilot()" > -->
+                <button class="inputButtonClass btn btn-primary">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>
+
 
             </div>
 <!--             <div class="inputContainerClass">
