@@ -14,6 +14,8 @@ const lineRider = document.getElementById("line2");
 //const switchModeButtonElement = document.getElementById("inputModeElement");
 const accuracyObject = document.getElementById("accuracy");
 const inputPilotButtonElement = document.getElementById("inputPilotButton");
+const inputPilotButtonTextElement = document.getElementById("inputPilotButtonText")
+
 //const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
 const inputModeButtonElement = document.getElementById("inputModeButton");
 //const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
@@ -202,6 +204,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             timeShiftElement.disabled = true;
             pilot.clearData();
             pilot.earliestDate =  maxDaysToData(pilot.maxDays);
+            
             pilot.timeShift =  await getTimeShift(pilot.earliestDate);
             if (pilot.timeShift == -1){
                 fillPilotNoData();

@@ -59,4 +59,6 @@ div{
 .noDataClass{
     color: red;
 }
-
+.btn{
+    width: 170px;
+}
