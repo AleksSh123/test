@@ -15,7 +15,7 @@ const lineRider = document.getElementById("line2");
 const accuracyObject = document.getElementById("accuracy");
 const inputPilotButtonElement = document.getElementById("inputPilotButton");
 const inputPilotButtonTextElement = document.getElementById("inputPilotButtonText")
-
+const inputPilotButtonSpinnerElement = document.getElementById("inputButtonSpinner");
 //const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
 const inputModeButtonElement = document.getElementById("inputModeButton");
 //const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
@@ -194,8 +194,9 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         if (timerPilotUpdate){
             pilotIdElement.disabled = false;
             timeShiftElement.disabled = false;
-            inputPilotButtonElement.classList.remove("btn-success");
-            inputPilotButtonElement.classList.remove("inputButtonClassPressed");
+            setPilotButtonCaption("initial");
+            //inputPilotButtonElement.classList.remove("btn-success");
+            //inputPilotButtonElement.classList.remove("inputButtonClassPressed");
             clearInterval(timerPilotUpdate);
             timerPilotUpdate = 0;
         } else {
@@ -204,18 +205,20 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             timeShiftElement.disabled = true;
             pilot.clearData();
             pilot.earliestDate =  maxDaysToData(pilot.maxDays);
-            
+            setPilotButtonCaption("loading");
             pilot.timeShift =  await getTimeShift(pilot.earliestDate);
             if (pilot.timeShift == -1){
                 fillPilotNoData();
                 pilotIdElement.disabled = false;
                 timeShiftElement.disabled = false;
+                setPilotButtonCaption("initial");
                 return;
             } else {
                 fillPilotData();
                 timerPilotUpdate = setInterval(fillPilotData,5000);
-                inputPilotButtonElement.classList.add("btn-success");
-                inputPilotButtonElement.classList.add("inputButtonClassPressed");
+                setPilotButtonCaption("watching");
+                //inputPilotButtonElement.classList.add("btn-success");
+                //inputPilotButtonElement.classList.add("inputButtonClassPressed");
             }
 
         }        
@@ -227,6 +230,29 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         result = beginDayDateUnix - (86400000 * (daysCount - 1));
         pilot.earliestDate = result;
         return result;
+    }
+
+    function setPilotButtonCaption(mode){
+        switch(mode){
+            case "initial":
+                inputPilotButtonElement.classList.remove("btn-success");
+                inputPilotButtonTextElement.innerHTML = "запустить слежку";
+                inputPilotButtonSpinnerElement.classList.add("visually-hidden");
+                break;
+            case "loading":
+                inputPilotButtonElement.classList.remove("btn-success");
+                inputPilotButtonTextElement.innerHTML = "грузим...";
+                inputPilotButtonSpinnerElement.classList.remove("visually-hidden");
+                break;
+            case "watching":
+                inputPilotButtonElement.classList.add("btn-success");
+                inputPilotButtonTextElement.innerHTML = "остановить слежку";
+                inputPilotButtonSpinnerElement.classList.add("visually-hidden");
+                break;
+            default:
+                alert("ошибка в обработке статуса кнопки!")
+        }
+        return;
     }
 
     async function getTimeShift(date){
