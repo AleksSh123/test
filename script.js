@@ -7,8 +7,9 @@ const distanceObject = document.getElementById("distance");
 const directionObject = document.getElementById("direction");
 const pilotIdElement = document.getElementById("pilotId");
 const timeShiftElement = document.getElementById("timeShift");
-const shiftedDateElement = document.getElementById("shiftedDate");
-const actualDateElement = document.getElementById("actualDate");
+const requestDateElement = document.getElementById("requestDate");
+const lastSeenDateElement = document.getElementById("lastSeenDate");
+const lastSeenAgoElement = document.getElementById("lastSeenAgo");
 const lineRider = document.getElementById("line2");
 //const inputButtonElement = document.getElementById("inputButtonElement");
 //const switchModeButtonElement = document.getElementById("inputModeElement");
@@ -18,6 +19,7 @@ const inputPilotButtonTextElement = document.getElementById("inputPilotButtonTex
 const inputPilotButtonSpinnerElement = document.getElementById("inputButtonSpinner");
 //const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
 const inputModeButtonElement = document.getElementById("inputModeButton");
+const inputModeButtonTextElement = document.getElementById("modeButtonText");
 //const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
 /* //////////////////////////
 let debug1 = document.getElementById("gpsH");
@@ -128,7 +130,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     function updateView(){
 
 
-        updateData(shiftedDateElement, watcher.requestTime);
+        updateData(requestDateElement, convertToShortDate(watcher.requestTime));
         if (!watcher.noGps){
             updateData(accuracyObject,watcher.accuracy);
         } else{
@@ -139,15 +141,16 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(groundHeightObject, pilot.groundHeight);
             updateData(instantSpeedObject, pilot.velocity);
             updateData(averageSpeedObject, pilot.averageVelocity60)
-            //updateData(actualDateElement,convertToShortDate(pilot.timestamp))
-            updateData(actualDateElement,getLivedataLatency(pilot.timestamp))
+            updateData(lastSeenDateElement,convertToShortDate(pilot.timestamp))
+            updateData(lastSeenAgoElement, getLivedataLatency(pilot.timestamp))
 
         } else {
             updateData(altitudeObject, null);
             updateData(groundHeightObject, null);
             updateData(instantSpeedObject, null);
             updateData(averageSpeedObject, null);
-            updateData(actualDateElement,null);
+            updateData(lastSeenDateElement, null);
+            updateData(lastSeenAgoElement, null);
             updateData(distanceObject, null);
             setNoDirection();
         }
@@ -241,7 +244,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                 break;
             case "loading":
                 inputPilotButtonElement.classList.remove("btn-success");
-                inputPilotButtonTextElement.innerHTML = "грузим...";
+                inputPilotButtonTextElement.innerHTML = "Загружаем...";
                 inputPilotButtonSpinnerElement.classList.remove("visually-hidden");
                 break;
             case "watching":
@@ -375,6 +378,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         } else{
             requestTime = pilot.timestamp - 70;
         }
+        watcher.requestTime = requestTime;
         let data = await getLiveData(pilotId, requestTime);
         let array = data[pilotId];
         if (array){
@@ -575,7 +579,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             window.removeEventListener("deviceorientation", handleOrientation);
             watcher.headingModeDevOri = false;
             inputModeButtonElement.classList.remove("btn-success");
-            inputModeButtonElement.classList.remove("inputButtonClassPressed");
+            inputModeButtonTextElement.innerHTML = "включить компас";
+            //inputModeButtonElement.classList.remove("inputButtonClassPressed");
 
         } else{
             if (
@@ -587,7 +592,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                 window.addEventListener("deviceorientation", handleOrientation);
                 watcher.headingModeDevOri = true;
                 inputModeButtonElement.classList.add("btn-success");
-                inputModeButtonElement.classList.add("inputButtonClassPressed");
+                inputModeButtonTextElement.innerHTML = "выключить компас";
+                //inputModeButtonElement.classList.add("inputButtonClassPressed");
         }
         
     }

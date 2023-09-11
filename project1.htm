@@ -33,9 +33,12 @@
 
             </div>
             <div class="d-flex justify-content-around">
-                <input type="button" id="inputModeButton" class="inputButtonClass btn btn-primary" value="включить компас" data-bs-toggle="button" autocomplete="off" onclick="switchToDevori()">
+                <!-- <input type="button" id="inputModeButton" class="inputButtonClass btn btn-primary" value="включить компас" data-bs-toggle="button" autocomplete="off" onclick="switchToDevori()"> -->
+                <button class="inputButtonClass btn btn-primary" id="inputModeButton" onclick="switchToDevori()">
+                    <span id="modeButtonText">включить компас</span>
+                </button>
                 <!-- <input type="button" id="inputPilotButton" class="inputButtonClass btn btn-primary" value="запустить слежку" data-bs-toggle="button" autocomplete="off" onclick="inputPilot()" > -->
-                <button class="inputButtonClass btn btn-primary" id="inputPilotButton" data-bs-toggle="button" autocomplete="off" onclick="inputPilot()">
+                <button class="inputButtonClass btn btn-primary" id="inputPilotButton" onclick="inputPilot()">
                     <span class="spinner-border spinner-border-sm visually-hidden" id="inputButtonSpinner" role="status" aria-hidden="true"></span>
                     <span id="inputPilotButtonText">запустить слежку</span>
                 </button>
@@ -79,6 +82,7 @@
                     <div>расстояние, км</div>
                     <div>направление, гр.</div>
                     <div>дата наблюдения</div>
+                    <div>дата посл. данных</div>
                     <div>давность данных</div>
                     <div>точн. GPS тел., м.</div>
 <!--                     <div>gpsHeading</div>
@@ -94,8 +98,9 @@
                     <div class="noDataClass" id="averageSpeed">00</div>
                     <div class="noDataClass" id="distance">000</div>
                     <div class="noDataClass" id="direction">0</div>
-                    <div class="noDataClass" id="shiftedDate">00-00-0000 00:00:00</div>
-                    <div class="noDataClass" id="actualDate">00-00-0000 00:00:00</div>
+                    <div class="noDataClass" id="requestDate">00-00-0000 00:00:00</div>
+                    <div class="noDataClass" id="lastSeenDate">00-00-0000 00:00:00</div>
+                    <div class="noDataClass" id="lastSeenAgo">00s</div>
                     <div class="noDataClass" id="accuracy">00</div>
 <!--                     <div class="noDataClass" id="gpsH">00</div>
                     <div class="noDataClass" id="devOriH">00</div>

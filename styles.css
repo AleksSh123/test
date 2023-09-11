@@ -62,3 +62,6 @@ div{
 .btn{
     width: 175px;
 }
+#inputButtonSpinner{
+    margin-right: 10px;
+}
