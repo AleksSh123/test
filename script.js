@@ -367,6 +367,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         }
     }
 
+
+    
     async function  getLiveData(sn,timeStamp){
         urlLocal = url + "?trackers={\"" + String(sn) + "\":" + String(timeStamp) + "}";
         let response = await fetch(urlLocal);
