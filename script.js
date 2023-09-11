@@ -126,15 +126,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
  
     function updateView(){
-        /*
-//////////////////////debug section
-        updateData(debug1, watcher.gpsHeading);
-        updateData(debug2, watcher.devOrientationHeading);
-        updateData(debug3, calculations.watcherToPilotAzumit);
-        updateData(debug4, calculations.directionToPilotGps);
-        updateData(debug5, calculations.directionToPilotOri);
-///////////////////////
-*/
+
 
         updateData(shiftedDateElement, watcher.requestTime);
         if (!watcher.noGps){
@@ -208,8 +200,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             pilot.clearData();
             pilot.earliestDate =  maxDaysToData(pilot.maxDays);
             setPilotButtonCaption("loading");
-            pilot.timeShift =  await getTimeShift(pilot.earliestDate);
-            if (pilot.timeShift == -1){
+            let requestTimestamp =  await getTimeShift(pilot.earliestDate);
+            if (requestTimestamp == -1){
                 fillPilotNoData();
                 pilotIdElement.disabled = false;
                 timeShiftElement.disabled = false;
@@ -263,32 +255,37 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         return;
     }
 
-    async function getTimeShift(date){
-        pilot.timeShift = pilot.initialShift;
+    async function getTimeShift(earliestDate){
+        let currentUnixTime = new Date().getTime();
+        let requestTimestamp = Math.round((currentUnixTime - pilot.initialShift)/1000)
+        //pilot.timeShift = pilot.initialShift;
         let response = null;
         let pilotData = null;
-        response = await getLiveData(pilot.id, getRequestTime(pilot.timeShift));
+        response = await getLiveData(pilot.id, requestTimestamp);
         pilotData = response[pilot.id];
-        if (pilotDataIsValid(pilotData) == "ok") return pilot.timeShift;
-        let firstPoint = pilot.timeShift;
-        let currentUnixTime = new Date().getTime();
-        pilot.timeShift = currentUnixTime - date;
+        if (pilotDataIsValid(pilotData) == "ok"){
+            getPilotData(pilot.id, requestTimestamp);
+            return requestTimestamp;
+        } 
+        let firstPoint = requestTimestamp;
+        //let currentUnixTime = new Date().getTime();
+        requestTimestamp = Math.round(earliestDate / 1000);
         response = null;
         pilotData = null;
-        response = await getLiveData(pilot.id, getRequestTime(pilot.timeShift));
+        response = await getLiveData(pilot.id, requestTimestamp);
         pilotData = response[pilot.id];
         if (pilotDataIsValid(pilotData) == "no data") return -1;
-        let secondPoint = pilot.timeShift;
+        let secondPoint = requestTimestamp;
         while (pilotDataIsValid(pilotData) != "ok"){
-            pilot.timeShift = Math.round((secondPoint + firstPoint) / 2);
+            requestTimestamp = Math.round((secondPoint + firstPoint) / 2);
             response = null;
             pilotData = null;
-            response = await getLiveData(pilot.id, getRequestTime(pilot.timeShift));
+            response = await getLiveData(pilot.id, requestTimestamp);
             pilotData = response[pilot.id];
             if (pilotData){ 
-                secondPoint = pilot.timeShift;
+                secondPoint = requestTimestamp;
             } else {
-                firstPoint = pilot.timeShift;
+                firstPoint = requestTimestamp;
             }
             console.log (pilot.timeShift);
             if (pilotData){
@@ -298,7 +295,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             }
             
         }
-        return pilot.timeShift;
+        getPilotData(pilot.id, requestTimestamp);
+        return requestTimestamp;
     }
 
 /*         while ((getRequestUnixTime(pilot.timeShift) > date) && (!data)){
@@ -316,7 +314,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
 
     function pilotDataIsValid(array){
         if (!array) return "no data"; 
-        let result = (array.length < 301) ? "ok" : "exceed";
+        let result = (array.length < 900) ? "ok" : "exceed";
         return result;
     }
 
@@ -328,7 +326,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
 
     async function fillPilotData(){ 
-        const pilotData = await getPilotData(pilot.id, pilot.timeShift);
+        const pilotData = await getPilotData(pilot.id, 0);
         updateView();
     }
 
@@ -337,7 +335,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         updateData(altitudeObject, "no data");
     }
 
-    async function getPilotData(pilotId, timeShift){ 
+    /* async function getPilotData(pilotId, timeShift){ 
         let currentTime = new Date().getTime();
         let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
         watcher.requestTime = convertToShortDate(requestTime);
@@ -365,9 +363,42 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             pilot.receivedData = false;
             return false;
         }
+    } */
+
+    async function getPilotData(pilotId, timeStamp){ 
+/*         let currentTime = new Date().getTime();
+        let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
+        watcher.requestTime = convertToShortDate(requestTime); */
+        let requestTime;        
+        if (timeStamp != 0){
+            requestTime = timeStamp
+        } else{
+            requestTime = pilot.timestamp - 70;
+        }
+        let data = await getLiveData(pilotId, requestTime);
+        let array = data[pilotId];
+        if (array){
+            
+            array.reverse();
+            pilot.baroAltitude = array[0].c;
+            pilot.gpsAltitude = array[0].h;
+            pilot.velocity = array[0].v;
+            pilot.groundHeight = array[0].s;
+            pilot.bearing = array[0].b;
+            pilot.timestamp = array[0].d;
+            pilot.latitude = array[0].ai / 60000;
+            pilot.longitude = array[0].oi / 60000;
+            pilot.averageVelocity60 = calculateAverageSpeed60(array);
+            pilot.receivedData = true;
+            let result = [pilot.timestamp, pilot.latitude, pilot.longitude, pilot.baroAltitude,
+                 pilot.gpsAltitude, pilot.velocity, pilot.averageVelocity60, pilot.bearing, pilot.groundHeight]
+
+            return result;
+        } else {
+            pilot.receivedData = false;
+            return false;
+        }
     }
-
-
     
     async function  getLiveData(sn,timeStamp){
         urlLocal = url + "?trackers={\"" + String(sn) + "\":" + String(timeStamp) + "}";
@@ -426,31 +457,6 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         calculations.directionToPilotOri = Math.round(calculations.watcherToPilotAzumit - watcher.devOrientationHeading);
         console.log(calculations.directionToPilotOri);
     }
-
-    /*
-    function calculateSpeedAverage(){
-        if (speedStack.array.length == 0) return [null,null];
-        let speedSumm5 = 0;
-        let speedSumm10m = 0;
-        let currentTime = new Date();
-        let countSpeed5Watches = 0;
-        let count10mWathches = 0;
-    
-        for (let i = speedStack.array.length - 1; i >= 0 ; i--){
-            if (i > (speedStack.array.length - 6)){
-                speedSumm5 += Number(speedStack.array[i][0]);
-                countSpeed5Watches++;
-            }
-            if ((currentTime.getTime() - speedStack.array[i][2])<60000){
-                speedSumm10m += Number(speedStack.array[i][0]);
-                count10mWathches++;
-            }
-        }
-        speedAverage5 = speedSumm5 / countSpeed5Watches;
-        speedAverage10m = speedSumm10m / count10mWathches;
-        return [speedAverage5, speedAverage10m];
-    }
-    */
 
     function calculateHeadingAverage(){
         if (headingStack.array.length == 0) {
