@@ -11,23 +11,14 @@ const requestDateElement = document.getElementById("requestDate");
 const lastSeenDateElement = document.getElementById("lastSeenDate");
 const lastSeenAgoElement = document.getElementById("lastSeenAgo");
 const lineRider = document.getElementById("line2");
-//const inputButtonElement = document.getElementById("inputButtonElement");
-//const switchModeButtonElement = document.getElementById("inputModeElement");
 const accuracyObject = document.getElementById("accuracy");
 const inputPilotButtonElement = document.getElementById("inputPilotButton");
 const inputPilotButtonTextElement = document.getElementById("inputPilotButtonText")
 const inputPilotButtonSpinnerElement = document.getElementById("inputButtonSpinner");
-//const inputPilotButtonLabelElement = document.getElementById("inputPilotLabel");
+
 const inputModeButtonElement = document.getElementById("inputModeButton");
 const inputModeButtonTextElement = document.getElementById("modeButtonText");
-//const inputModeButtonLabelElement = document.getElementById("inputModeLabel");
-/* //////////////////////////
-let debug1 = document.getElementById("gpsH");
-let debug2 = document.getElementById("devOriH");
-let debug3 = document.getElementById("az");
-let debug4 = document.getElementById("toPHGps")
-let debug5 = document.getElementById("toPHDevOri");
-///////////////////////////  */
+
 let timerPilotUpdate = 0;
 //let azimutTest =0;
 const options = {
@@ -338,35 +329,6 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         updateData(altitudeObject, "no data");
     }
 
-    /* async function getPilotData(pilotId, timeShift){ 
-        let currentTime = new Date().getTime();
-        let  requestTime = Math.round((currentTime - Number(timeShift))/1000)
-        watcher.requestTime = convertToShortDate(requestTime);
-        
-        let data = await getLiveData(pilotId, requestTime);
-        let array = data[pilotId];
-        if (array){
-            
-            array.reverse();
-            pilot.baroAltitude = array[0].c;
-            pilot.gpsAltitude = array[0].h;
-            pilot.velocity = array[0].v;
-            pilot.groundHeight = array[0].s;
-            pilot.bearing = array[0].b;
-            pilot.timestamp = array[0].d;
-            pilot.latitude = array[0].ai / 60000;
-            pilot.longitude = array[0].oi / 60000;
-            pilot.averageVelocity60 = calculateAverageSpeed60(array);
-            pilot.receivedData = true;
-            let result = [pilot.timestamp, pilot.latitude, pilot.longitude, pilot.baroAltitude,
-                 pilot.gpsAltitude, pilot.velocity, pilot.averageVelocity60, pilot.bearing, pilot.groundHeight]
-
-            return result;
-        } else {
-            pilot.receivedData = false;
-            return false;
-        }
-    } */
 
     async function getPilotData(pilotId, timeStamp){ 
 /*         let currentTime = new Date().getTime();
@@ -399,6 +361,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
 
             return result;
         } else {
+            
             pilot.receivedData = false;
             return false;
         }
