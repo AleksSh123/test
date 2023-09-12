@@ -2,7 +2,7 @@ body {
     font-size: 1em;
 }
 div{
-    max-width: 400px;
+    /* max-width: 400px; */
 }
 .coordinates{
 
@@ -17,7 +17,7 @@ div{
     border: solid 1px;
 }
 .speedometr{
-    width: 400px;
+    /* width: 400px; */
     border: solid 1px;
 }
 .inputPilotClass{
@@ -31,6 +31,7 @@ div{
 }
 .firstLevelContainer{
     border: solid 1px;
+    max-width: 400px;
 }
 
 .inputButtonClass{
@@ -60,7 +61,9 @@ div{
     color: red;
 }
 .btn{
-    width: 175px;
+    width: 160px;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
 }
 #inputButtonSpinner{
     margin-right: 10px;

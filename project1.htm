@@ -14,6 +14,22 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <div class="modal fade" id="modalDialog">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                
+                <div class="modal-body">
+                    <p> данные отсутствуют!</p>
+                </div>
+                <div id="modal-footer">
+                    <button type="button" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+            <div>
+               
+            </div>
+        </div>
+    </div>
     <div class="container firstLevelContainer">
         <div class="inputPilotClass row">
             <div class="headerClass">
@@ -38,40 +54,14 @@
                     <span id="modeButtonText">включить компас</span>
                 </button>
                 <!-- <input type="button" id="inputPilotButton" class="inputButtonClass btn btn-primary" value="запустить слежку" data-bs-toggle="button" autocomplete="off" onclick="inputPilot()" > -->
-                <button class="inputButtonClass btn btn-primary" id="inputPilotButton" onclick="inputPilot()">
+                <button class="inputButtonClass btn btn-primary" id="inputPilotButton" data-bs-toggle="modal" data-bs-target="#modalDialog" onclick="inputPilot()">
                     <span class="spinner-border spinner-border-sm visually-hidden" id="inputButtonSpinner" role="status" aria-hidden="true"></span>
                     <span id="inputPilotButtonText">запустить слежку</span>
                 </button>
 
 
             </div>
-<!--             <div class="inputContainerClass">
-                <div class="inputElementClass row gx-1">
-                    <div class="col-3 text-end">
-                         ID:
-                    </div>
-                    <div class="col-9">
-                        <input id="pilotId" type="text" value="4673" size="12">
-                    </div>
-                </div>
-                <div class="inputElementClass row gx-1">
-                    <div class="col-3 text-end">
-                        Timeshift:
-                    </div>
-                    <div class="col-9">
-                        <input id="timeShift" type="text" size="12">
-                    </div>
-                </div>
-                <div class="inputElementClass row">
-                    <div class="col-12 justify-content-center">
-                        <label for="inputPilotButton"  id="inputPilotLabel" class="inputButtonLabelClass d-block gap-3">
-                            <input type="button" id="inputPilotButton" class="btn btn-primary btn-sm" data-bs-toggle="button" autocomplete="off" value="Введите летуна" onclick="inputPilot()">
-                            <input type="button" id="inputModeButton" class="btn btn-primary btn-sm" data-bs-toggle="button" autocomplete="off" value="devOrientation" onclick="switchToDevori()">
-                        </label>
-                    </div>
-                </div>
 
-            </div> -->
         </div>
         <div class="pilotDataElementClass row align-items-center">
                 <div class="col-6">
@@ -85,11 +75,7 @@
                     <div>дата посл. данных</div>
                     <div>давность данных</div>
                     <div>точн. GPS тел., м.</div>
-<!--                     <div>gpsHeading</div>
-                    <div>devOriHeading</div>
-                    <div>azimut</div>
-                    <div>toPilotHeadingGps</div>
-                    <div>toPilotHeadingDevOri</div> -->
+
                 </div >
                 <div class="col-6">
                     <div class="noDataClass" id="altitude">0</div>
@@ -102,11 +88,7 @@
                     <div class="noDataClass" id="lastSeenDate">00-00-0000 00:00:00</div>
                     <div class="noDataClass" id="lastSeenAgo">00s</div>
                     <div class="noDataClass" id="accuracy">00</div>
-<!--                     <div class="noDataClass" id="gpsH">00</div>
-                    <div class="noDataClass" id="devOriH">00</div>
-                    <div class="noDataClass" id="az">00</div>
-                    <div class="noDataClass" id="toPHGps">00</div>
-                    <div class="noDataClass" id="toPHDevOri">00</div> -->
+
                 </div>
         </div>
         <div id="speedometr" class="speedometr row">
@@ -132,6 +114,7 @@
                 <line id="line2" x1="150" y1="270" x2="150" y2="40" stroke="#4aa8dc" stroke-width="3px" marker-end="url(#riderArrow)"/>
             </svg>
         </div>
+
     </div>
 
 
