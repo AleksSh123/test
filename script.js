@@ -15,9 +15,9 @@ const accuracyObject = document.getElementById("accuracy");
 const inputPilotButtonElement = document.getElementById("inputPilotButton");
 const inputPilotButtonTextElement = document.getElementById("inputPilotButtonText")
 const inputPilotButtonSpinnerElement = document.getElementById("inputButtonSpinner");
-
 const inputModeButtonElement = document.getElementById("inputModeButton");
 const inputModeButtonTextElement = document.getElementById("modeButtonText");
+let noDataModal = new bootstrap.Modal(document.getElementById("modalDialog"));
 
 let timerPilotUpdate = 0;
 //let azimutTest =0;
@@ -121,7 +121,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     function updateView(){
 
 
-        updateData(requestDateElement, convertToShortDate(watcher.requestTime));
+        
         if (!watcher.noGps){
             updateData(accuracyObject,watcher.accuracy);
         } else{
@@ -131,7 +131,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(altitudeObject, pilot.baroAltitude);
             updateData(groundHeightObject, pilot.groundHeight);
             updateData(instantSpeedObject, pilot.velocity);
-            updateData(averageSpeedObject, pilot.averageVelocity60)
+            updateData(averageSpeedObject, pilot.averageVelocity60);
+            updateData(requestDateElement, convertToShortDate(watcher.requestTime));
             updateData(lastSeenDateElement,convertToShortDate(pilot.timestamp))
             updateData(lastSeenAgoElement, getLivedataLatency(pilot.timestamp))
 
@@ -140,6 +141,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(groundHeightObject, null);
             updateData(instantSpeedObject, null);
             updateData(averageSpeedObject, null);
+            updateData(requestDateElement, convertToShortDate(watcher.requestTime));
             updateData(lastSeenDateElement, null);
             updateData(lastSeenAgoElement, null);
             updateData(distanceObject, null);
@@ -196,12 +198,14 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             setPilotButtonCaption("loading");
             let requestTimestamp =  await getTimeShift(pilot.earliestDate);
             if (requestTimestamp == -1){
+                noDataModal.show();
                 fillPilotNoData();
                 pilotIdElement.disabled = false;
                 timeShiftElement.disabled = false;
                 setPilotButtonCaption("initial");
                 return;
             } else {
+                //await getPilotData(pilot.id, requestTimestamp); //инициирующий запрос данных (pilot.timestamp) пилота после обнаружения времени входа
                 fillPilotData();
                 timerPilotUpdate = setInterval(fillPilotData,5000);
                 setPilotButtonCaption("watching");
@@ -289,7 +293,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             }
             
         }
-        getPilotData(pilot.id, requestTimestamp);
+        await getPilotData(pilot.id, requestTimestamp);
         return requestTimestamp;
     }
 
@@ -449,6 +453,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     }
 
     function convertToShortDate(time){
+        if (time == null) return null;
         let longTime =  new Date(time * 1000);
         let date = longTime.getDate();
         let month = longTime.getMonth();

@@ -18,11 +18,11 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 
-                <div class="modal-body">
-                    <p> данные отсутствуют!</p>
+                <div class="modal-body text-center">
+                    <h5>Данные отсутствуют!</h5>
                 </div>
-                <div id="modal-footer">
-                    <button type="button" class="btn btn-primary">OK</button>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
             <div>
@@ -33,7 +33,7 @@
     <div class="container firstLevelContainer">
         <div class="inputPilotClass row">
             <div class="headerClass">
-                <h6>Shlyapa web v.1.0.9b</h6>
+                <h6>Shlyapa web v.1.0.2</h6>
             </div>
             <div class="input-group mb-2">
                 <span class="col-3 input-group-text">
@@ -54,7 +54,7 @@
                     <span id="modeButtonText">включить компас</span>
                 </button>
                 <!-- <input type="button" id="inputPilotButton" class="inputButtonClass btn btn-primary" value="запустить слежку" data-bs-toggle="button" autocomplete="off" onclick="inputPilot()" > -->
-                <button class="inputButtonClass btn btn-primary" id="inputPilotButton" data-bs-toggle="modal" data-bs-target="#modalDialog" onclick="inputPilot()">
+                <button class="inputButtonClass btn btn-primary" id="inputPilotButton" onclick="inputPilot()">
                     <span class="spinner-border spinner-border-sm visually-hidden" id="inputButtonSpinner" role="status" aria-hidden="true"></span>
                     <span id="inputPilotButtonText">запустить слежку</span>
                 </button>
@@ -92,27 +92,30 @@
                 </div>
         </div>
         <div id="speedometr" class="speedometr row">
-            <svg width="300" height="300">
-                <defs>
-                    <!-- A marker to be used as an arrowhead -->
+            <div class="col-12 text-center">
+                <svg width="300" height="300">
+                    <defs>
+                        <!-- A marker to be used as an arrowhead -->
+    
+                        <marker
+                        id="riderArrow"
+                        viewBox="0 0 10 10"
+                        refX="5"
+                        refY="5"
+                        markerWidth="6"
+                        markerHeight="6"
+                        orient="auto-start-reverse"
+                        stroke="#4aa8dc"
+                        fill="#4aa8dc">
+                        <path d="M 0 0 L 10 5 L 0 10 z" />
+                    </marker>
+                    </defs>
+                    <circle id="circle" cx=150 cy=150 r=130 stroke="#4aa8dc" fill="transparent" stroke-width="3px"> </circle>
+    
+                    <line id="line2" x1="150" y1="270" x2="150" y2="40" stroke="#4aa8dc" stroke-width="3px" marker-end="url(#riderArrow)"/>
+                </svg>
+            </div>
 
-                    <marker
-                    id="riderArrow"
-                    viewBox="0 0 10 10"
-                    refX="5"
-                    refY="5"
-                    markerWidth="6"
-                    markerHeight="6"
-                    orient="auto-start-reverse"
-                    stroke="#4aa8dc"
-                    fill="#4aa8dc">
-                    <path d="M 0 0 L 10 5 L 0 10 z" />
-                </marker>
-                </defs>
-                <circle id="circle" cx=150 cy=150 r=130 stroke="#4aa8dc" fill="transparent" stroke-width="3px"> </circle>
-
-                <line id="line2" x1="150" y1="270" x2="150" y2="40" stroke="#4aa8dc" stroke-width="3px" marker-end="url(#riderArrow)"/>
-            </svg>
         </div>
 
     </div>

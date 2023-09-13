@@ -1,9 +1,7 @@
 body {
     font-size: 1em;
 }
-div{
-    /* max-width: 400px; */
-}
+
 .coordinates{
 
     justify-content: space-around;
