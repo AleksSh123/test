@@ -137,7 +137,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(lastSeenDateElement,convertToShortDate(pilot.timestamp));
             updateData(lastSeenAgoElement, getLivedataLatency(pilot.timestamp));
             linkToMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=12");
-            linkToMapElement.setAttribute("target","_blank");
+            linkToMapElement.setAttribute("target","blank");
 
         } else {
             updateData(altitudeObject, null);
