@@ -18,6 +18,7 @@ const inputPilotButtonSpinnerElement = document.getElementById("inputButtonSpinn
 const inputModeButtonElement = document.getElementById("inputModeButton");
 const inputModeButtonTextElement = document.getElementById("modeButtonText");
 const linkToMapElement = document.getElementById("linkToMap");
+const linkToVeloMapElement = document.getElementById("linkToMapVelo");
 let noDataModal = new bootstrap.Modal(document.getElementById("modalDialog"));
 
 let timerPilotUpdate = 0;
@@ -136,9 +137,10 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(requestDateElement, convertToShortDate(watcher.requestTime));
             updateData(lastSeenDateElement,convertToShortDate(pilot.timestamp));
             updateData(lastSeenAgoElement, getLivedataLatency(pilot.timestamp));
-            linkToMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=12");
+            linkToMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=13");
             linkToMapElement.setAttribute("target","blank");
-
+            linkToVeloMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=13&layers=C");
+            linkToVeloMapElement.setAttribute("target","blank");
         } else {
             updateData(altitudeObject, null);
             updateData(groundHeightObject, null);
