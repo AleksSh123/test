@@ -601,6 +601,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
 
     function stopFetching(){
         controller.abort();
+        controller = new AbortController();
     }
     
     /*
