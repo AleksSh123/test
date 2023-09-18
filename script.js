@@ -17,7 +17,7 @@ const inputPilotButtonTextElement = document.getElementById("inputPilotButtonTex
 const inputPilotButtonSpinnerElement = document.getElementById("inputButtonSpinner");
 const inputModeButtonElement = document.getElementById("inputModeButton");
 const inputModeButtonTextElement = document.getElementById("modeButtonText");
-const linkToMapElement = document.getElementById("linkToMap");
+const linkToGoogleMapElement = document.getElementById("linkToGoogleMap");
 const linkToVeloMapElement = document.getElementById("linkToMapVelo");
 let noDataModal = new bootstrap.Modal(document.getElementById("modalDialog"));
 let controller = new AbortController();
@@ -138,8 +138,10 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             updateData(requestDateElement, convertToShortDate(watcher.requestTime));
             updateData(lastSeenDateElement,convertToShortDate(pilot.timestamp));
             updateData(lastSeenAgoElement, getLivedataLatency(pilot.timestamp));
-            linkToMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=13");
-            linkToMapElement.setAttribute("target","blank");
+            //linkToGoogleMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=13");
+            //http://maps.google.com/maps?z=12&t=m&q=loc:38.9419+-78.3020
+            linkToGoogleMapElement.setAttribute("href","http://maps.google.com/maps?z=12&t=h&q=loc:" + pilot.latitude + "+" + pilot.longitude);
+            linkToGoogleMapElement.setAttribute("target","blank");
             linkToVeloMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=13&layers=C");
             linkToVeloMapElement.setAttribute("target","blank");
         } else {
@@ -154,8 +156,6 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             setNoDirection();
         }
         if ((!watcher.noGps) && (pilot.receivedData)){
-            //calculateDistance();
-            //calculateWatcherToPilotAzimut();
             calculateDistanceBearing();
             updateData(distanceObject, calculations.distance);
             if ((watcher.gpsHeading != null) && (!watcher.headingModeDevOri)) {
@@ -177,6 +177,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     async function inputPilot(){
         pilot.id = pilotIdElement.value;
         pilot.maxDays = timeShiftElement.value;
+        let requestTimestamp;
         if ((pilot.id == 0) || (!Number.isInteger(Number(pilot.id)))) {
             alert("не числовое или нулевое значение ID!");
             return;
@@ -185,14 +186,10 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             alert("не числовое или нулевое значение окна наблюдения!");
             return;
         } 
-        //pilot.timeShift = timeShiftElement.value * 1000;
-        //inputButtonElement.classList.add("inputButtonClassPressed");
         if (timerPilotUpdate){
             pilotIdElement.disabled = false;
             timeShiftElement.disabled = false;
             setPilotButtonCaption("initial");
-            //inputPilotButtonElement.classList.remove("btn-success");
-            //inputPilotButtonElement.classList.remove("inputButtonClassPressed");
             clearInterval(timerPilotUpdate);
             timerPilotUpdate = 0;
         } else {
@@ -203,14 +200,28 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             pilot.earliestDate =  maxDaysToData(pilot.maxDays);
             setPilotButtonCaption("loading");
             inputPilotButtonElement.setAttribute("onclick","stopFetching()");
-            let requestTimestamp =  await getTimeShift(pilot.earliestDate);
-            inputPilotButtonElement.setAttribute("onclick","inputPilot()");
-            if (requestTimestamp == -2){
-                pilotIdElement.disabled = false;
-                timeShiftElement.disabled = false;
-                setPilotButtonCaption("initial");
-                return;
-            } else if (requestTimestamp == -1){
+            try {
+                requestTimestamp =  await getTimeShift(pilot.earliestDate);
+            } catch(error){
+                if (error.name == "AbortError"){
+                    pilotIdElement.disabled = false;
+                    timeShiftElement.disabled = false;
+                    setPilotButtonCaption("initial");
+                    return;
+
+                } else {
+                    alert(error);
+                    pilotIdElement.disabled = false;
+                    timeShiftElement.disabled = false;
+                    setPilotButtonCaption("initial");
+                    return;
+                }
+            } finally{
+                inputPilotButtonElement.setAttribute("onclick","inputPilot()");
+            }
+
+
+             if (requestTimestamp == -1){
                 noDataModal.show();
                 fillPilotNoData();
                 pilotIdElement.disabled = false;
@@ -222,8 +233,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                 fillPilotData();
                 timerPilotUpdate = setInterval(fillPilotData,5000);
                 setPilotButtonCaption("watching");
-                //inputPilotButtonElement.classList.add("btn-success");
-                //inputPilotButtonElement.classList.add("inputButtonClassPressed");
+
             }
 
         }        
@@ -252,7 +262,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
                 break;
             case "loading":
                 inputPilotButtonElement.classList.remove("btn-success");
-                inputPilotButtonTextElement.innerHTML = "Загружаем...";
+                inputPilotButtonTextElement.innerHTML = "Отменить";
                 inputPilotButtonSpinnerElement.classList.remove("visually-hidden");
                 break;
             case "watching":
@@ -310,19 +320,6 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         await getPilotData(pilot.id, requestTimestamp);
         return requestTimestamp;
     }
-
-/*         while ((getRequestUnixTime(pilot.timeShift) > date) && (!data)){
-            response = await getLiveData(pilot.id, getRequestTime(pilot.timeShift));
-            data = response[pilot.id];
-            if (!data){
-                pilot.timeShift += 9000000;
-            }
-        }
-        if (!data) pilot.timeShift = -1;
-        return pilot.timeShift; */
-    
-
-
 
     function pilotDataIsValid(array){
         if (!array) return "no data"; 
@@ -395,9 +392,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             liveData = await response.json();
         }
         catch(error){
-            alert(error);
-            alert(error.stack);
-            return false;
+            throw(error);
         }
         return liveData;
     }
