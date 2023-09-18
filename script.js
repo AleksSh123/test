@@ -20,6 +20,7 @@ const inputModeButtonTextElement = document.getElementById("modeButtonText");
 const linkToMapElement = document.getElementById("linkToMap");
 const linkToVeloMapElement = document.getElementById("linkToMapVelo");
 let noDataModal = new bootstrap.Modal(document.getElementById("modalDialog"));
+let controller = new AbortController();
 
 let timerPilotUpdate = 0;
 //let azimutTest =0;
@@ -201,8 +202,15 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             pilot.clearData();
             pilot.earliestDate =  maxDaysToData(pilot.maxDays);
             setPilotButtonCaption("loading");
+            inputPilotButtonElement.setAttribute("onclick","stopFetching()");
             let requestTimestamp =  await getTimeShift(pilot.earliestDate);
-            if (requestTimestamp == -1){
+            inputPilotButtonElement.setAttribute("onclick","inputPilot()");
+            if (requestTimestamp == -2){
+                pilotIdElement.disabled = false;
+                timeShiftElement.disabled = false;
+                setPilotButtonCaption("initial");
+                return;
+            } else if (requestTimestamp == -1){
                 noDataModal.show();
                 fillPilotNoData();
                 pilotIdElement.disabled = false;
@@ -265,6 +273,7 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         let response = null;
         let pilotData = null;
         response = await getLiveData(pilot.id, requestTimestamp);
+        if (response === false) return -2;
         pilotData = response[pilot.id];
         if (pilotDataIsValid(pilotData) == "ok"){
             getPilotData(pilot.id, requestTimestamp);
@@ -378,8 +387,18 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
     
     async function  getLiveData(sn,timeStamp){
         urlLocal = url + "?trackers={\"" + String(sn) + "\":" + String(timeStamp) + "}";
-        let response = await fetch(urlLocal);
-        let liveData = await response.json();
+        let liveData;
+        try{
+            let response = await fetch(urlLocal,{
+                signal: controller.signal
+              });
+            liveData = await response.json();
+        }
+        catch(error){
+            alert(error);
+            alert(error.stack);
+            return false;
+        }
         return liveData;
     }
 
@@ -579,6 +598,10 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             watcher.angle = angle;
         }
     };
+
+    function stopFetching(){
+        controller.abort();
+    }
     
     /*
     function gpsEmulation(){

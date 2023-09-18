@@ -63,6 +63,10 @@ body {
     padding-left: 0.3rem;
     padding-right: 0.3rem;
 }
+.btn:active{
+    transform: translateY(2px);
+}
+
 #inputButtonSpinner{
     margin-right: 10px;
 }
