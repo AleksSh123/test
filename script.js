@@ -577,6 +577,11 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             watcher.angle = angle;
         }
     };
+
+    function getPress(){
+        inputPilotButtonElement.classList.add("inputButtonClassPressed");
+        inputPilotButtonElement.classList.remove("shadow");
+    }
     
     /*
     function gpsEmulation(){
