@@ -143,7 +143,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
             //linkToGoogleMapElement.setAttribute("href","http://maps.google.com/maps?z=12&t=h&q=loc:" + pilot.latitude + "+" + pilot.longitude);
             https://www.google.com/maps/search/?api=1&query=56.041173%2C92.614961
             http://maps.google.com/?q=MY%20LOCATION@lat,long
-            linkToGoogleMapElement.setAttribute("href","http://maps.google.com/?q=MY%20LOCATION@" + pilot.latitude + "," + pilot.longitude + "&t=h&z=5");
+            //linkToGoogleMapElement.setAttribute("href","http://maps.google.com/?q=MY%20LOCATION@" + pilot.latitude + "," + pilot.longitude + "&t=h&z=5");
+            linkToGoogleMapElement.setAttribute("href","https://www.google.com/maps/place/" + pilot.latitude + "," + pilot.longitude + "/@" + pilot.latitude + "," + pilot.longitude + ",13z/data=!3m1!1e3");
             linkToGoogleMapElement.setAttribute("target","blank");
             linkToVeloMapElement.setAttribute("href","https://www.openstreetmap.org/?mlat=" + pilot.latitude + "&mlon=" + pilot.longitude + "&zoom=13&layers=C");
             linkToVeloMapElement.setAttribute("target","blank");
