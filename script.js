@@ -495,8 +495,8 @@ let position = navigator.geolocation.watchPosition(successGetGPS,errorGetGPS,opt
         const livedataUnixTime = time * 1000;
         const latency = currentUnixTime - livedataUnixTime;
         const calculatedDate = new Date(latency);
-        let days = calculatedDate.getDate() - 1 ;
-        let hours = calculatedDate.getHours();
+        let days = calculatedDate.getUTCDate() - 1 ;
+        let hours = calculatedDate.getUTCHours();
         let minutes = calculatedDate.getMinutes();
         let seconds = calculatedDate.getSeconds();
         (days!= 0) ? days += "d " : days = "";
